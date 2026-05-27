@@ -9,7 +9,7 @@ app.use(express.json());
 
 // ========== ПОДКЛЮЧЕНИЕ К SUPABASE ==========
 // ЗАМЕНИТЕ НА ВАШУ СТРОКУ ПОДКЛЮЧЕНИЯ
-const SUPABASE_CONNECTION_STRING = 'postgresql://postgres.uwuwycqkrzwqnoxatgxw:NqFNd6E3m3vWMM52@aws-0-eu-central-1.pooler.supabase.com:6543/postgres';
+const SUPABASE_CONNECTION_STRING = 'postgresql://postgres.rvzyrhzacvbyitkckwhn:NqFNd6E3m3vWMM52@aws-0-eu-central-1.pooler.supabase.com:6543/postgres';
 const pool = new Pool({
     connectionString: SUPABASE_CONNECTION_STRING,
     ssl: { rejectUnauthorized: false }
