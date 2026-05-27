@@ -1,10 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
+const path = require('path');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 const DATA_FILE = 'data.json';
+
 function loadData() {
     try {
         if (fs.existsSync(DATA_FILE)) {
@@ -23,6 +27,7 @@ function loadData() {
         nextReviewId: 1
     };
 }
+
 function saveData(data) {
     try {
         fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
@@ -30,6 +35,7 @@ function saveData(data) {
         console.log('Ошибка сохранения:', err.message);
     }
 }
+
 let data = loadData();
 let users = data.users;
 let events = data.events;
@@ -38,16 +44,26 @@ let reviews = data.reviews;
 let nextUserId = data.nextUserId;
 let nextEventId = data.nextEventId;
 let nextReviewId = data.nextReviewId;
+
 if (!users.find(u => u.email === 'admin@event.com')) {
     users.push({ id: nextUserId++, name: 'Админ', surname: 'Системы', phone: '0000000000', email: 'admin@event.com', role: 'admin', is_admin: true });
     saveData({ users, events, participants, reviews, nextUserId, nextEventId, nextReviewId });
 }
+
 function persist() {
     saveData({ users, events, participants, reviews, nextUserId, nextEventId, nextReviewId });
 }
+
+// ========== ОТДАЁМ HTML СТРАНИЦУ ==========
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// ========== API МЕРОПРИЯТИЙ ==========
 app.get('/api/events', (req, res) => {
     res.json(events);
 });
+
 app.post('/api/events', (req, res) => {
     const { name, description, image_url, added_by_email } = req.body;
     const newEvent = {
@@ -62,6 +78,7 @@ app.post('/api/events', (req, res) => {
     persist();
     res.json(newEvent);
 });
+
 app.delete('/api/events/:id', (req, res) => {
     const { id } = req.params;
     const { email, isAdmin } = req.body;
@@ -77,6 +94,8 @@ app.delete('/api/events/:id', (req, res) => {
     persist();
     res.json({ success: true });
 });
+
+// ========== API ПОЛЬЗОВАТЕЛЕЙ ==========
 app.post('/api/register', (req, res) => {
     const { name, surname, phone, email, role } = req.body;
     if (users.find(u => u.email === email)) {
@@ -92,23 +111,29 @@ app.post('/api/register', (req, res) => {
     persist();
     res.json(newUser);
 });
+
 app.post('/api/login', (req, res) => {
     const { email } = req.body;
     const user = users.find(u => u.email === email);
     if (!user) return res.status(404).json({ error: 'Пользователь не найден' });
     res.json(user);
 });
+
 app.put('/api/users/:email', (req, res) => {
     const { email } = req.params;
     const { name, surname, phone } = req.body;
     const userIndex = users.findIndex(u => u.email === email);
     if (userIndex === -1) return res.status(404).json({ error: 'Пользователь не найден' });
+    
     if (name) users[userIndex].name = name;
     if (surname) users[userIndex].surname = surname;
     if (phone) users[userIndex].phone = phone;
+    
     persist();
     res.json(users[userIndex]);
 });
+
+// ========== API УЧАСТНИКОВ ==========
 app.post('/api/participate', (req, res) => {
     const { user_email, user_name, event_id, event_name } = req.body;
     if (participants.find(p => p.user_email === user_email && p.event_id === event_id)) {
@@ -122,6 +147,7 @@ app.post('/api/participate', (req, res) => {
     persist();
     res.json({ success: true });
 });
+
 app.get('/api/participants', (req, res) => {
     const { employeeEmail } = req.query;
     const user = users.find(u => u.email === employeeEmail);
@@ -130,9 +156,12 @@ app.get('/api/participants', (req, res) => {
     }
     res.json(participants);
 });
+
 app.get('/api/participants/:eventId', (req, res) => {
     res.json(participants.filter(p => p.event_id == req.params.eventId));
 });
+
+// ========== API ОТЗЫВОВ ==========
 app.get('/api/reviews', (req, res) => {
     const { userEmail } = req.query;
     const user = users.find(u => u.email === userEmail);
@@ -141,9 +170,11 @@ app.get('/api/reviews', (req, res) => {
     }
     res.json(reviews);
 });
+
 app.get('/api/reviews/:eventId', (req, res) => {
     res.json(reviews.filter(r => r.event_id == req.params.eventId));
 });
+
 app.post('/api/reviews', (req, res) => {
     const { event_id, event_name, user_email, user_name, rating, comment } = req.body;
     if (!rating || rating < 1 || rating > 5) {
@@ -169,6 +200,7 @@ app.post('/api/reviews', (req, res) => {
     persist();
     res.json(newReview);
 });
+
 app.delete('/api/reviews/:id', (req, res) => {
     const { id } = req.params;
     const { userEmail } = req.body;
@@ -187,12 +219,15 @@ app.delete('/api/reviews/:id', (req, res) => {
     persist();
     res.json({ success: true });
 });
+
+// ========== API АДМИНИСТРАТОРА ==========
 app.get('/api/employees', (req, res) => {
     const { adminEmail } = req.query;
     const admin = users.find(u => u.email === adminEmail);
     if (!admin || !admin.is_admin) return res.status(403).json({ error: 'Доступ только для администратора' });
     res.json(users.filter(u => u.role === 'employee'));
 });
+
 app.post('/api/create-employee', (req, res) => {
     const { adminEmail, name, surname, phone, email } = req.body;
     const admin = users.find(u => u.email === adminEmail);
@@ -202,6 +237,7 @@ app.post('/api/create-employee', (req, res) => {
     persist();
     res.json({ success: true });
 });
+
 app.delete('/api/employees/:email', (req, res) => {
     const { email } = req.params;
     const { adminEmail } = req.body;
@@ -212,12 +248,14 @@ app.delete('/api/employees/:email', (req, res) => {
     persist();
     res.json({ success: true });
 });
+
 app.get('/api/users', (req, res) => {
     const { adminEmail } = req.query;
     const admin = users.find(u => u.email === adminEmail);
     if (!admin || !admin.is_admin) return res.status(403).json({ error: 'Доступ только для администратора' });
     res.json(users.filter(u => u.role === 'user'));
 });
+
 app.delete('/api/users/:email', (req, res) => {
     const { email } = req.params;
     const { adminEmail } = req.body;
@@ -232,7 +270,9 @@ app.delete('/api/users/:email', (req, res) => {
     }
     res.json({ success: true });
 });
-app.listen(3001, () => {
+
+// ========== ЗАПУСК СЕРВЕРА ==========
+app.listen(3001, '0.0.0.0', () => {
     console.log('Сервер запущен на http://localhost:3001');
     console.log('Админ: admin@event.com');
-})
+});
