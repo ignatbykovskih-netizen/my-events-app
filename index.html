@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мероприятия PRO</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .navbar { background: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #667eea; }
+        .user-info { display: flex; align-items: center; gap: 1rem; }
+        .user-badge { background: #e0e7ff; padding: 0.3rem 0.8rem; border-radius: 2rem; font-size: 0.9rem; color: #4f46e5; font-weight: bold; }
+        .btn { background: #667eea; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-outline { background: transparent; border: 1px solid #667eea; color: #667eea; }
+        .btn-outline:hover { background: #667eea; color: white; }
+        .btn-secondary { background: #6b7280; }
+        .btn-secondary:hover { background: #4b5563; }
+        .btn-danger { background: #dc2626; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-success { background: #10b981; }
+        .btn-success:hover { background: #059669; }
+        .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
+        .card { background: white; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card h2 { margin-bottom: 1rem; border-left: 4px solid #667eea; padding-left: 1rem; }
+        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .event-card { background: white; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s; }
+        .event-card:hover { transform: translateY(-5px); }
+        .event-card img { width: 100%; height: 180px; object-fit: cover; }
+        .event-info { padding: 1rem; }
+        .event-title { font-weight: bold; font-size: 1.1rem; }
+        .event-rating { color: #f59e0b; font-size: 0.8rem; margin: 5px 0; }
+        .event-description { font-size: 0.85rem; color: #555; margin: 0.5rem 0; line-height: 1.4; }
+        .flex-buttons { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 1rem; padding: 2rem; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .close-modal { float: right; font-size: 1.5rem; cursor: pointer; }
+        .motivation { background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-align: center; padding: 3rem; border-radius: 1rem; margin-bottom: 2rem; }
+        footer { background: #1a1a2e; color: white; text-align: center; padding: 2rem; margin-top: 3rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.3rem; font-weight: bold; }
+        .form-group input, .form-group textarea { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 0.5rem; }
+        .rating-stars { color: #f59e0b; font-size: 1.2rem; letter-spacing: 2px; }
+        .review-item { border-bottom: 1px solid #ddd; padding: 10px 0; }
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e5e7eb; flex-wrap: wrap; }
+        .tab { padding: 0.75rem 1.5rem; cursor: pointer; border: none; background: rgba(255,255,255,0.9); font-weight: bold; font-size: 1rem; color: #333; border-radius: 0.5rem 0.5rem 0 0; }
+        .tab.active { color: #667eea; border-bottom: 3px solid #667eea; background: white; }
+        .hidden { display: none; }
+        .employees-list, .users-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .employee-item, .user-item { background: #f5f5f5; padding: 0.75rem; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .profile-info { background: #f9fafb; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem; }
+        .profile-info p { margin: 0.5rem 0; }
+        .edit-form { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Мероприятия PRO</div>
+        <div class="user-info" id="userInfo">
+            <span class="user-badge" id="userRoleBadge">Не авторизован</span>
+            <button class="btn" id="authBtn" onclick="showAuthModal()">Войти / Регистрация</button>
+        </div>
+    </nav>
+    <div class="container" id="app"></div>
+    <footer><p>2026 Платформа управления мероприятиями</p></footer>
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+            <h2>Вход / Регистрация</h2>
+            <div class="form-group"><label>Имя</label><input type="text" id="regName" placeholder="Имя"></div>
+            <div class="form-group"><label>Фамилия</label><input type="text" id="regSurname" placeholder="Фамилия"></div>
+            <div class="form-group"><label>Телефон</label><input type="tel" id="regPhone" placeholder="Телефон"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="regEmail" placeholder="Email"></div>
+            <button class="btn" style="width:100%" onclick="registerOrLogin()">Войти / Зарегистрироваться</button>
+        </div>
+    </div>
+    <div id="reviewsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeReviewsModal()">&times;</span>
+            <h3 id="reviewsTitle">Отзывы</h3>
+            <div id="reviewsList"></div>
+            <button class="btn btn-secondary btn-sm" style="margin-top:1rem;" onclick="closeReviewsModal()">Закрыть</button>
+        </div>
+    </div>
+    <script>
+        const API_URL = 'http://localhost:3001/api';
+        let currentUser = null;
+        let isLoggedIn = false;
+        let events = [];
+        let employees = [];
+        let allUsers = [];
+        let currentTab = 'events';
+        function saveSession() {
+            if (currentUser) {
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                localStorage.setItem('isLoggedIn', 'true');
+            } else {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('isLoggedIn');
+            }
+        }
+        function loadSession() {
+            const savedUser = localStorage.getItem('currentUser');
+            const savedLogin = localStorage.getItem('isLoggedIn');
+            if (savedUser && savedLogin === 'true') {
+                currentUser = JSON.parse(savedUser);
+                isLoggedIn = true;
+                updateUI();
+                return true;
+            }
+            return false;
+        }
+        async function loadEvents() {
+            try {
+                const res = await fetch(`${API_URL}/events`);
+                events = await res.json();
+                render();
+            } catch (err) {
+                document.getElementById('app').innerHTML = '<div class="card"><p style="color:red;">Ошибка: сервер не запущен</p></div>';
+            }
+        }
+        async function loadEmployees() {
+            if (!currentUser?.is_admin) return;
+            try {
+                const res = await fetch(`${API_URL}/employees?adminEmail=${currentUser.email}`);
+                employees = await res.json();
+                render();
+            } catch (err) { console.error(err); }
+        }
+        async function loadAllUsers() {
+            if (!currentUser?.is_admin) return;
+            try {
+                const res = await fetch(`${API_URL}/users?adminEmail=${currentUser.email}`);
+                allUsers = await res.json();
+                render();
+            } catch (err) { console.error(err); }
+        }
+        async function updateProfile() {
+            const name = document.getElementById('editName').value.trim();
+            const surname = document.getElementById('editSurname').value.trim();
+            const phone = document.getElementById('editPhone').value.trim();
+            if (!name || !surname || !phone) { alert('Заполните все поля'); return; }
+            
+            const res = await fetch(`${API_URL}/users/${currentUser.email}`, {
+                method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, surname, phone })
+            });
+            if (res.ok) {
+                currentUser = await res.json();
+                saveSession();
+                updateUI();
+                render();
+                alert('Данные обновлены');
+            } else { alert('Ошибка'); }
+        }
+        async function registerOrLogin() {
+            const name = document.getElementById('regName').value.trim();
+            const surname = document.getElementById('regSurname').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            if (!name || !surname || !phone || !email) { alert('Заполните все поля'); return; }
+            try {
+                let res = await fetch(`${API_URL}/login`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                if (res.ok) {
+                    currentUser = await res.json();
+                } else {
+                    res = await fetch(`${API_URL}/register`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, surname, phone, email, role: 'user' })
+                    });
+                    if (!res.ok) throw new Error('Ошибка регистрации');
+                    currentUser = await res.json();
+                }
+                isLoggedIn = true;
+                saveSession();
+                closeAuthModal();
+                updateUI();
+                if (currentUser.is_admin) {
+                    await loadEmployees();
+                    await loadAllUsers();
+                }
+                await loadEvents();
+                currentTab = 'events';
+                render();
+            } catch (err) { alert(err.message); }
+        }
+        function updateUI() {
+            const badge = document.getElementById('userRoleBadge');
+            const btn = document.getElementById('authBtn');
+            if (isLoggedIn && currentUser) {
+                let roleText = currentUser.is_admin ? 'Администратор' : (currentUser.role === 'employee' ? 'Сотрудник' : 'Пользователь');
+                badge.innerHTML = `${currentUser.name} ${currentUser.surname} | ${roleText}`;
+                btn.textContent = 'Выйти';
+                btn.onclick = logout;
+            } else {
+                badge.innerHTML = 'Не авторизован';
+                btn.textContent = 'Войти / Регистрация';
+                btn.onclick = showAuthModal;
+            }
+        }
+        function logout() {
+            isLoggedIn = false;
+            currentUser = null;
+            employees = [];
+            allUsers = [];
+            saveSession();
+            updateUI();
+            loadEvents();
+        }
+        function setTab(tab) {
+            currentTab = tab;
+            render();
+        }
+        async function addEvent() {
+            const name = document.getElementById('eventName')?.value.trim();
+            const description = document.getElementById('eventDescription')?.value.trim();
+            let image_url = document.getElementById('eventImage')?.value.trim();
+            if (!name || !description) { alert('Заполните название и описание'); return; }
+            if (!image_url) image_url = 'https://picsum.photos/id/100/400/200';
+            await fetch(`${API_URL}/events`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, description, image_url, added_by_email: currentUser.email })
+            });
+            document.getElementById('eventName').value = '';
+            document.getElementById('eventDescription').value = '';
+            document.getElementById('eventImage').value = '';
+            await loadEvents();
+            render();
+            alert('Мероприятие добавлено');
+        }
+        async function deleteEvent(eventId) {
+            if (!confirm('Удалить мероприятие?')) return;
+            await fetch(`${API_URL}/events/${eventId}`, {
+                method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: currentUser.email, isAdmin: currentUser.is_admin })
+            });
+            await loadEvents();
+            render();
+        }
+        async function createEmployee() {
+            const name = document.getElementById('empName')?.value.trim();
+            const surname = document.getElementById('empSurname')?.value.trim();
+            const phone = document.getElementById('empPhone')?.value.trim();
+            const email = document.getElementById('empEmail')?.value.trim();
+            if (!name || !surname || !phone || !email) { alert('Заполните все поля'); return; }
+            const res = await fetch(`${API_URL}/create-employee`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminEmail: currentUser.email, name, surname, phone, email })
+            });
+            if (res.ok) {
+                alert('Сотрудник добавлен');
+                document.getElementById('empName').value = '';
+                document.getElementById('empSurname').value = '';
+                document.getElementById('empPhone').value = '';
+                document.getElementById('empEmail').value = '';
+                await loadEmployees();
+                render();
+            } else { alert('Ошибка'); }
+        }
+        async function deleteEmployee(email) {
+            if (!confirm('Удалить сотрудника?')) return;
+            await fetch(`${API_URL}/employees/${email}`, {
+                method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminEmail: currentUser.email })
+            });
+            await loadEmployees();
+            render();
+        }
+        async function deleteUser(email) {
+            if (!confirm('Удалить пользователя?')) return;
+            await fetch(`${API_URL}/users/${email}`, {
+                method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminEmail: currentUser.email })
+            });
+            await loadAllUsers();
+            await loadEvents();
+            render();
+            alert('Пользователь удалён');
+        }
+        async function participateInEvent(eventId, eventName) {
+            if (!isLoggedIn) { alert('Войдите в аккаунт'); return; }
+            const res = await fetch(`${API_URL}/participate`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_email: currentUser.email, user_name: currentUser.name, event_id: eventId, event_name: eventName })
+            });
+            if (res.ok) alert('Вы записаны на мероприятие');
+            else alert('Ошибка или вы уже записаны');
+        }
+        async function showReviews(eventId, eventName) {
+            const res = await fetch(`${API_URL}/reviews/${eventId}`);
+            const reviews = await res.json();
+            document.getElementById('reviewsTitle').innerHTML = `Отзывы о "${eventName}" (${reviews.length})`;
+            if (reviews.length === 0) {
+                document.getElementById('reviewsList').innerHTML = '<p>Пока нет отзывов</p>';
+            } else {
+                document.getElementById('reviewsList').innerHTML = reviews.map(r => `
+                    <div class="review-item">
+                        <strong>${r.user_name}</strong>
+                        <div class="rating-stars">${'★'.repeat(r.rating)} (${r.rating}/5)</div>
+                        ${r.comment ? `<p>${r.comment}</p>` : ''}
+                        <small>${new Date(r.created_at).toLocaleDateString()}</small>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('reviewsModal').classList.add('active');
+        }
+        function closeReviewsModal() {
+            document.getElementById('reviewsModal').classList.remove('active');
+        }
+        async function addReview(eventId, eventName) {
+            if (!isLoggedIn) { alert('Войдите в аккаунт'); return; }
+            const rating = prompt('Оценка от 1 до 5:', '5');
+            if (!rating) return;
+            const ratingNum = parseInt(rating);
+            if (ratingNum < 1 || ratingNum > 5) { alert('Оценка от 1 до 5'); return; }
+            const comment = prompt('Ваш отзыв:');
+            await fetch(`${API_URL}/reviews`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ event_id: eventId, event_name: eventName, user_email: currentUser.email, user_name: currentUser.name, rating: ratingNum, comment: comment })
+            });
+            alert('Спасибо за отзыв');
+            await loadEvents();
+            render();
+        }
+        function showAuthModal() { document.getElementById('authModal').classList.add('active'); }
+        function closeAuthModal() { document.getElementById('authModal').classList.remove('active'); }
+        function renderAccountTab() {
+            return `
+                <div class="card"><h2>👤 Мой аккаунт</h2>
+                    <div class="profile-info">
+                        <p><strong>Имя:</strong> ${currentUser.name}</p>
+                        <p><strong>Фамилия:</strong> ${currentUser.surname}</p>
+                        <p><strong>Телефон:</strong> ${currentUser.phone}</p>
+                        <p><strong>Email:</strong> ${currentUser.email} (нельзя изменить)</p>
+                        <p><strong>Роль:</strong> ${currentUser.is_admin ? 'Администратор' : (currentUser.role === 'employee' ? 'Сотрудник' : 'Пользователь')}</p>
+                    </div>
+                    <div class="edit-form">
+                        <h3>✏️ Редактировать данные</h3>
+                        <div class="form-group"><label>Имя</label><input type="text" id="editName" value="${currentUser.name}"></div>
+                        <div class="form-group"><label>Фамилия</label><input type="text" id="editSurname" value="${currentUser.surname}"></div>
+                        <div class="form-group"><label>Телефон</label><input type="tel" id="editPhone" value="${currentUser.phone}"></div>
+                        <button class="btn" onclick="updateProfile()">Сохранить изменения</button>
+                    </div>
+                </div>
+            `;
+        }
+        function renderEventsList(showDelete = false, showParticipate = true) {
+            if (events.length === 0) return '<p>Мероприятия пока не добавлены</p>';
+            return `
+                <div class="events-grid">
+                    ${events.map(e => `
+                        <div class="event-card">
+                            <img src="${e.image_url}" onerror="this.src='https://picsum.photos/id/100/400/200'">
+                            <div class="event-info">
+                                <div class="event-title">${e.name}</div>
+                                ${e.avg_rating ? `<div class="event-rating">${'★'.repeat(Math.round(e.avg_rating))} ${e.avg_rating.toFixed(1)}/5</div>` : '<div class="event-rating">Нет оценок</div>'}
+                                <div class="event-description">${e.description}</div>
+                                <div class="flex-buttons">
+                                    <button class="btn btn-secondary" onclick="showReviews(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отзывы</button>
+                                    ${showParticipate ? (isLoggedIn ? `<button class="btn" onclick="participateInEvent(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Записаться</button>
+                                    <button class="btn btn-outline" onclick="addReview(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Оценить</button>` : `<button class="btn" onclick="showAuthModal()">Записаться</button>`) : ''}
+                                    ${showDelete ? `<button class="btn btn-danger" onclick="deleteEvent(${e.id})">Удалить</button>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        function render() {
+            const app = document.getElementById('app');
+            if (!isLoggedIn || !currentUser) {
+                app.innerHTML = `<div class="motivation"><h1>Добро пожаловать</h1><p>Войдите, чтобы записываться на мероприятия</p></div>
+                <div class="card"><h2>Мероприятия</h2>${renderEventsList(false, true)}</div>`;
+            } else if (currentUser.is_admin) {
+                app.innerHTML = `
+                    <div class="tabs">
+                        <button class="tab ${currentTab === 'employees' ? 'active' : ''}" onclick="setTab('employees')">Сотрудники</button>
+                        <button class="tab ${currentTab === 'users' ? 'active' : ''}" onclick="setTab('users')">Пользователи</button>
+                        <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
+                        <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
+                    </div>
+                    <div id="employeesTab" class="${currentTab !== 'employees' ? 'hidden' : ''}">
+                        <div class="card"><h2>Добавить сотрудника</h2>
+                            <div class="form-group"><label>Имя</label><input type="text" id="empName" placeholder="Имя"></div>
+                            <div class="form-group"><label>Фамилия</label><input type="text" id="empSurname" placeholder="Фамилия"></div>
+                            <div class="form-group"><label>Телефон</label><input type="tel" id="empPhone" placeholder="Телефон"></div>
+                            <div class="form-group"><label>Email</label><input type="email" id="empEmail" placeholder="Email"></div>
+                            <button class="btn btn-success" onclick="createEmployee()">Добавить сотрудника</button>
+                        </div>
+                        <div class="card"><h2>Список сотрудников (${employees.length})</h2>
+                            ${employees.length === 0 ? '<p>Нет сотрудников</p>' : `<div class="employees-list">${employees.map(emp => `<div class="employee-item"><div><strong>${emp.name} ${emp.surname}</strong><br><small>${emp.email} | ${emp.phone}</small></div><button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.email}')">Удалить</button></div>`).join('')}</div>`}
+                        </div>
+                    </div>
+                    <div id="usersTab" class="${currentTab !== 'users' ? 'hidden' : ''}">
+                        <div class="card"><h2>Список пользователей (${allUsers.length})</h2>
+                            ${allUsers.length === 0 ? '<p>Нет зарегистрированных пользователей</p>' : `<div class="users-list">${allUsers.map(user => `<div class="user-item"><div><strong>${user.name} ${user.surname}</strong><br><small>${user.email} | ${user.phone}</small><small style="color:#888;">Роль: ${user.role === 'employee' ? 'Сотрудник' : 'Пользователь'}</small></div><button class="btn btn-danger btn-sm" onclick="deleteUser('${user.email}')">Удалить</button></div>`).join('')}</div>`}
+                        </div>
+                    </div>
+                    <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
+                        <div class="card"><h2>Добавить мероприятие</h2>
+                            <div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div>
+                            <div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div>
+                            <div class="form-group"><label>Ссылка на фото</label><input type="text" id="eventImage" placeholder="https://..."></div>
+                            <button class="btn btn-success" onclick="addEvent()">Добавить мероприятие</button>
+                        </div>
+                        <div class="card"><h2>Все мероприятия (${events.length})</h2>${renderEventsList(true, false)}</div>
+                    </div>
+                    <div id="accountTab" class="${currentTab !== 'account' ? 'hidden' : ''}">${renderAccountTab()}</div>
+                `;
+            } else if (currentUser.role === 'employee') {
+                app.innerHTML = `
+                    <div class="tabs">
+                        <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
+                        <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
+                    </div>
+                    <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
+                        <div class="card"><h2>Добавить мероприятие</h2>
+                            <div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div>
+                            <div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div>
+                            <div class="form-group"><label>Ссылка на фото</label><input type="text" id="eventImage" placeholder="https://..."></div>
+                            <button class="btn btn-success" onclick="addEvent()">Добавить мероприятие</button>
+                        </div>
+                        <div class="card"><h2>Все мероприятия</h2>${renderEventsList(false, true)}</div>
+                    </div>
+                    <div id="accountTab" class="${currentTab !== 'account' ? 'hidden' : ''}">${renderAccountTab()}</div>
+                `;
+            } else {
+                app.innerHTML = `
+                    <div class="tabs">
+                        <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
+                        <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
+                    </div>
+                    <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
+                        <div class="card"><h2>Мероприятия</h2>${renderEventsList(false, true)}</div>
+                    </div>
+                    <div id="accountTab" class="${currentTab !== 'account' ? 'hidden' : ''}">${renderAccountTab()}</div>
+                `;
+            }
+        }
+        if (!loadSession()) {
+            loadEvents();
+            updateUI();
+        } else {
+            loadEvents();
+            if (currentUser.is_admin) {
+                loadEmployees();
+                loadAllUsers();
+            }
+        }
+    </script>
+</body>
+</html>
