@@ -9,7 +9,7 @@ app.use(express.json());
 
 // ========== ПОДКЛЮЧЕНИЕ К SUPABASE ==========
 // ВСТАВЬТЕ ВАШУ СТРОКУ ПОДКЛЮЧЕНИЯ (пароль должен быть без квадратных скобок)
-const SUPABASE_CONNECTION_STRING = 'postgresql://postgres:[MyEvents2025!Supabase]@db.rvzyrhzacvbyitkckwhn.supabase.co:5432/postgres';
+const SUPABASE_CONNECTION_STRING = 'postgresql://postgres.uwuwycqkrzwqnoxatgxw:NqFNd6E3m3vWMM52@aws-0-eu-central-1.pooler.supabase.com:6543/postgres';
 
 const pool = new Pool({
     connectionString: SUPABASE_CONNECTION_STRING,
