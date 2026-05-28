@@ -6,7 +6,7 @@ const path = require('path');
 const app = express();
 app.use(cors());
 app.use(express.json());
-const SUPABASE_CONNECTION_STRING = 'postgresql://postgres.rvzyrhzacvbyitkckwhn:NqFNd6E3m3vWMM52@aws-0-eu-central-1.pooler.supabase.com:6543/postgres';
+const SUPABASE_CONNECTION_STRING = 'postgresql://postgres.czngxvbqwtmszfvtroak:NqFNd6E3m3vWMM52@aws-0-eu-central-1.pooler.supabase.com:6543/postgres';
 const pool = new Pool({
     connectionString: SUPABASE_CONNECTION_STRING,
     ssl: { rejectUnauthorized: false }
