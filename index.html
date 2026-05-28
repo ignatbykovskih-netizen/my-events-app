@@ -34,9 +34,14 @@
         .event-title { font-weight: bold; font-size: 1rem; }
         .event-date { font-size: 0.75rem; color: #667eea; margin: 0.25rem 0; }
         .event-rating { color: #f59e0b; font-size: 0.7rem; margin: 3px 0; }
-        .event-description { font-size: 0.8rem; color: #555; margin: 0.5rem 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .event-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
         .flex-buttons { display: flex; gap: 0.3rem; margin-top: 0.5rem; flex-wrap: wrap; }
-        .flex-buttons .btn { padding: 0.25rem 0.5rem; font-size: 0.7rem; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
         .modal-content { background: white; border-radius: 1rem; padding: 1.5rem; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
@@ -59,75 +64,21 @@
         .badge-pending { background: #f59e0b; color: #333; padding: 0.1rem 0.4rem; border-radius: 1rem; font-size: 0.6rem; }
         .badge-approved { background: #10b981; color: white; padding: 0.1rem 0.4rem; border-radius: 1rem; font-size: 0.6rem; }
         .badge-rejected { background: #dc2626; color: white; padding: 0.1rem 0.4rem; border-radius: 1rem; font-size: 0.6rem; }
-        /* Компактный календарь */
-        .calendar-compact {
-            background: white;
-            border-radius: 0.8rem;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-        }
-        .calendar-header-compact {
-            background: #667eea;
-            color: white;
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-weight: bold;
-            font-size: 0.7rem;
-        }
-        .calendar-header-compact div {
-            padding: 0.5rem;
-        }
-        .calendar-week-compact {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-        }
-        .calendar-day-compact {
-            min-height: 50px;
-            border: 1px solid #e5e7eb;
-            padding: 0.2rem;
-            background: white;
-            font-size: 0.7rem;
-            position: relative;
-        }
-        .calendar-day-number-compact {
-            font-weight: bold;
-            margin-bottom: 0.2rem;
-            color: #4b5563;
-            font-size: 0.7rem;
-        }
-        .calendar-day-events-compact div {
-            background: #e0e7ff;
-            margin: 0.1rem 0;
-            padding: 0.1rem 0.2rem;
-            border-radius: 0.2rem;
-            cursor: pointer;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            font-size: 0.6rem;
-        }
-        .calendar-empty-compact {
-            background: #f9fafb;
-            color: #9ca3af;
-        }
-        .calendar-controls-compact {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.8rem;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        .calendar-controls-compact h3 {
-            font-size: 1.1rem;
-            color: #333;
-        }
-        .calendar-controls-compact .btn-sm {
-            padding: 0.2rem 0.5rem;
-            font-size: 0.7rem;
-        }
+        .similar-events-list { max-height: 300px; overflow-y: auto; }
+        .similar-event-item { background: #f0f0f0; margin: 0.5rem 0; padding: 0.5rem; border-radius: 0.5rem; cursor: pointer; transition: 0.2s; }
+        .similar-event-item:hover { background: #e0e7ff; transform: scale(1.01); }
+        .match-badge { background: #10b981; color: white; font-size: 0.6rem; padding: 0.1rem 0.3rem; border-radius: 1rem; margin-left: 0.5rem; }
+        .calendar-compact { background: white; border-radius: 0.8rem; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+        .calendar-header-compact { background: #667eea; color: white; display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; font-size: 0.7rem; }
+        .calendar-header-compact div { padding: 0.5rem; }
+        .calendar-week-compact { display: grid; grid-template-columns: repeat(7, 1fr); }
+        .calendar-day-compact { min-height: 50px; border: 1px solid #e5e7eb; padding: 0.2rem; background: white; font-size: 0.7rem; }
+        .calendar-day-number-compact { font-weight: bold; margin-bottom: 0.2rem; color: #4b5563; font-size: 0.7rem; }
+        .calendar-day-events-compact div { background: #e0e7ff; margin: 0.1rem 0; padding: 0.1rem 0.2rem; border-radius: 0.2rem; cursor: pointer; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 0.6rem; }
+        .calendar-empty-compact { background: #f9fafb; color: #9ca3af; }
+        .calendar-controls-compact { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem; }
+        .calendar-controls-compact h3 { font-size: 1.1rem; color: #333; }
+        .calendar-controls-compact .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -168,7 +119,18 @@
             <h2>Предложить мероприятие</h2>
             <div class="form-group"><label>Название</label><input type="text" id="requestTitle" placeholder="Название мероприятия"></div>
             <div class="form-group"><label>Описание</label><textarea id="requestDescription" rows="3" placeholder="Опишите вашу идею..."></textarea></div>
-            <button class="btn btn-success" onclick="submitEventRequest()">Отправить заявку</button>
+            <button class="btn btn-success" onclick="submitSmartRequest()">Отправить заявку</button>
+        </div>
+    </div>
+
+    <div id="similarEventsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeSimilarModal()">&times;</span>
+            <h3>🔍 Похожие мероприятия</h3>
+            <p>Мы нашли мероприятия, похожие на вашу идею:</p>
+            <div id="similarEventsList"></div>
+            <hr>
+            <button class="btn btn-secondary btn-sm" onclick="sendRequestAnyway()">Всё равно отправить заявку</button>
         </div>
     </div>
 
@@ -186,6 +148,7 @@
         let currentTab = 'events';
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
+        let pendingRequestData = null;
 
         function saveSession() {
             if (currentUser) {
@@ -313,7 +276,6 @@
             const surname = document.getElementById('editSurname').value.trim();
             const phone = document.getElementById('editPhone').value.trim();
             if (!name || !surname || !phone) { alert('Заполните все поля'); return; }
-            
             const res = await fetch(`${API_URL}/users/${currentUser.email}`, {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, surname, phone })
@@ -419,7 +381,6 @@
             const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
             const startDay = firstDayOfMonth.getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            
             const eventsByDate = {};
             events.forEach(event => {
                 if (event.event_date) {
@@ -429,45 +390,94 @@
                     eventsByDate[key].push(event);
                 }
             });
-            
-            let calendarHtml = '<div class="calendar-compact"><div class="calendar-header-compact">';
-            const weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-            weekdays.forEach(day => {
-                calendarHtml += `<div>${day}</div>`;
-            });
-            calendarHtml += '</div><div class="calendar-week-compact">';
-            
+            let html = '<div class="calendar-compact"><div class="calendar-header-compact">';
+            ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].forEach(day => { html += `<div>${day}</div>`; });
+            html += '</div><div class="calendar-week-compact">';
             let startOffset = startDay === 0 ? 6 : startDay - 1;
-            for (let i = 0; i < startOffset; i++) {
-                calendarHtml += `<div class="calendar-day-compact calendar-empty-compact"></div>`;
-            }
-            
+            for (let i = 0; i < startOffset; i++) html += `<div class="calendar-day-compact calendar-empty-compact"></div>`;
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateKey = `${currentYear}-${currentMonth + 1}-${day}`;
                 const dayEvents = eventsByDate[dateKey] || [];
-                
-                calendarHtml += `<div class="calendar-day-compact">
-                    <div class="calendar-day-number-compact">${day}</div>
-                    <div class="calendar-day-events-compact">`;
-                
+                html += `<div class="calendar-day-compact"><div class="calendar-day-number-compact">${day}</div><div class="calendar-day-events-compact">`;
                 dayEvents.slice(0, 2).forEach(event => {
-                    calendarHtml += `<div onclick="openEventModal(${event.id})" title="${event.name}">📌 ${event.name.substring(0, 12)}${event.name.length > 12 ? '...' : ''}</div>`;
+                    html += `<div onclick="openEventModal(${event.id})" title="${event.name}">📌 ${event.name.substring(0, 12)}${event.name.length > 12 ? '...' : ''}</div>`;
                 });
-                if (dayEvents.length > 2) {
-                    calendarHtml += `<div style="color:#667eea; font-size:0.5rem;">+${dayEvents.length - 2}</div>`;
-                }
-                
-                calendarHtml += `</div></div>`;
+                if (dayEvents.length > 2) html += `<div style="color:#667eea; font-size:0.5rem;">+${dayEvents.length - 2}</div>`;
+                html += `</div></div>`;
             }
-            
             const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
             const remainingCells = totalCells - (startOffset + daysInMonth);
-            for (let i = 0; i < remainingCells; i++) {
-                calendarHtml += `<div class="calendar-day-compact calendar-empty-compact"></div>`;
+            for (let i = 0; i < remainingCells; i++) html += `<div class="calendar-day-compact calendar-empty-compact"></div>`;
+            html += '</div></div>';
+            return html;
+        }
+
+        async function findSimilarEvents(title, description) {
+            try {
+                const res = await fetch(`${API_URL}/find-similar-events`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, description })
+                });
+                return await res.json();
+            } catch (err) {
+                return [];
             }
+        }
+
+        async function submitSmartRequest() {
+            const title = document.getElementById('requestTitle').value.trim();
+            const description = document.getElementById('requestDescription').value.trim();
+            if (!title || !description) { alert('Заполните название и описание'); return; }
             
-            calendarHtml += '</div></div>';
-            return calendarHtml;
+            const similarEvents = await findSimilarEvents(title, description);
+            
+            if (similarEvents.length > 0) {
+                pendingRequestData = { title, description };
+                const similarHtml = similarEvents.map(e => `
+                    <div class="similar-event-item" onclick="participateFromSimilar(${e.id}, '${e.name.replace(/'/g, "\\'")}')">
+                        <strong>📌 ${e.name}</strong>
+                        <span class="match-badge">совпадение ${Math.round(e.match_score * 100)}%</span>
+                        <br><small>${e.description ? e.description.substring(0, 80) : 'Нет описания'}</small>
+                        <br><small>📅 ${e.event_date ? new Date(e.event_date).toLocaleDateString('ru-RU') : 'Дата не указана'}</small>
+                    </div>
+                `).join('');
+                document.getElementById('similarEventsList').innerHTML = similarHtml;
+                document.getElementById('similarEventsModal').classList.add('active');
+            } else {
+                await sendEventRequest(title, description);
+            }
+        }
+
+        function closeSimilarModal() {
+            document.getElementById('similarEventsModal').classList.remove('active');
+            pendingRequestData = null;
+        }
+
+        async function sendRequestAnyway() {
+            if (pendingRequestData) {
+                await sendEventRequest(pendingRequestData.title, pendingRequestData.description);
+                closeSimilarModal();
+            }
+        }
+
+        async function participateFromSimilar(eventId, eventName) {
+            closeSimilarModal();
+            await participateInEvent(eventId, eventName);
+        }
+
+        async function sendEventRequest(title, description) {
+            const res = await fetch(`${API_URL}/event-requests`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, description, author_email: currentUser.email, author_name: `${currentUser.name} ${currentUser.surname}` })
+            });
+            if (res.ok) {
+                alert('Заявка отправлена на рассмотрение сотруднику!');
+                document.getElementById('requestTitle').value = '';
+                document.getElementById('requestDescription').value = '';
+                closeRequestModal();
+                await loadMyRequests();
+                render();
+            } else { alert('Ошибка'); }
         }
 
         async function addEvent() {
@@ -552,7 +562,7 @@
                 body: JSON.stringify({ user_email: currentUser.email, user_name: currentUser.name, event_id: eventId, event_name: eventName })
             });
             if (res.ok) {
-                alert('Вы записаны на мероприятие');
+                alert('Вы записаны на мероприятие!');
                 await loadMyParticipations();
                 await loadEvents();
             } else {
@@ -570,24 +580,6 @@
                 alert('Вы отменили запись');
                 await loadMyParticipations();
                 await loadEvents();
-            } else { alert('Ошибка'); }
-        }
-
-        async function submitEventRequest() {
-            const title = document.getElementById('requestTitle').value.trim();
-            const description = document.getElementById('requestDescription').value.trim();
-            if (!title || !description) { alert('Заполните название и описание'); return; }
-            const res = await fetch(`${API_URL}/event-requests`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, description, author_email: currentUser.email, author_name: `${currentUser.name} ${currentUser.surname}` })
-            });
-            if (res.ok) {
-                alert('Заявка отправлена');
-                document.getElementById('requestTitle').value = '';
-                document.getElementById('requestDescription').value = '';
-                closeRequestModal();
-                await loadMyRequests();
-                render();
             } else { alert('Ошибка'); }
         }
 
@@ -610,19 +602,14 @@
                 document.getElementById('reviewsList').innerHTML = '<p>Пока нет отзывов</p>';
             } else {
                 document.getElementById('reviewsList').innerHTML = reviews.map(r => `
-                    <div class="review-item">
-                        <strong>${r.user_name}</strong>
-                        <div class="rating-stars">${'★'.repeat(r.rating)} (${r.rating}/5)</div>
-                        ${r.comment ? `<p>${r.comment}</p>` : ''}
-                        <small>${new Date(r.created_at).toLocaleDateString()}</small>
-                    </div>
+                    <div class="review-item"><strong>${r.user_name}</strong><div class="rating-stars">${'★'.repeat(r.rating)} (${r.rating}/5)</div>${r.comment ? `<p>${r.comment}</p>` : ''}<small>${new Date(r.created_at).toLocaleDateString()}</small></div>
                 `).join('');
             }
             document.getElementById('reviewsModal').classList.add('active');
         }
 
         function closeReviewsModal() { document.getElementById('reviewsModal').classList.remove('active'); }
-        function showRequestModal() { document.getElementById('requestModal').classList.add('active'); }
+        function showRequestModal() { document.getElementById('requestTitle').value = ''; document.getElementById('requestDescription').value = ''; document.getElementById('requestModal').classList.add('active'); }
         function closeRequestModal() { document.getElementById('requestModal').classList.remove('active'); }
         function showAuthModal() { document.getElementById('authModal').classList.add('active'); }
         function closeAuthModal() { document.getElementById('authModal').classList.remove('active'); }
@@ -650,55 +637,12 @@
         }
 
         function renderAccountTab() {
-            return `
-                <div class="card"><h2>Мой аккаунт</h2>
-                    <div class="profile-info">
-                        <p><strong>Имя:</strong> ${currentUser.name}</p>
-                        <p><strong>Фамилия:</strong> ${currentUser.surname}</p>
-                        <p><strong>Телефон:</strong> ${currentUser.phone}</p>
-                        <p><strong>Email:</strong> ${currentUser.email} (нельзя изменить)</p>
-                        <p><strong>Роль:</strong> ${currentUser.is_admin ? 'Администратор' : (currentUser.role === 'employee' ? 'Сотрудник' : 'Пользователь')}</p>
-                    </div>
-                    <div class="edit-form">
-                        <h3>Редактировать данные</h3>
-                        <div class="form-group"><label>Имя</label><input type="text" id="editName" value="${currentUser.name}"></div>
-                        <div class="form-group"><label>Фамилия</label><input type="text" id="editSurname" value="${currentUser.surname}"></div>
-                        <div class="form-group"><label>Телефон</label><input type="tel" id="editPhone" value="${currentUser.phone}"></div>
-                        <button class="btn btn-sm" onclick="updateProfile()">Сохранить</button>
-                    </div>
-                </div>
-            `;
+            return `<div class="card"><h2>Мой аккаунт</h2><div class="profile-info"><p><strong>Имя:</strong> ${currentUser.name}</p><p><strong>Фамилия:</strong> ${currentUser.surname}</p><p><strong>Телефон:</strong> ${currentUser.phone}</p><p><strong>Email:</strong> ${currentUser.email} (нельзя изменить)</p><p><strong>Роль:</strong> ${currentUser.is_admin ? 'Администратор' : (currentUser.role === 'employee' ? 'Сотрудник' : 'Пользователь')}</p></div><div class="edit-form"><h3>Редактировать данные</h3><div class="form-group"><label>Имя</label><input type="text" id="editName" value="${currentUser.name}"></div><div class="form-group"><label>Фамилия</label><input type="text" id="editSurname" value="${currentUser.surname}"></div><div class="form-group"><label>Телефон</label><input type="tel" id="editPhone" value="${currentUser.phone}"></div><button class="btn btn-sm" onclick="updateProfile()">Сохранить</button></div></div>`;
         }
 
         function renderEventsList(showDelete = false, showStats = false) {
             if (events.length === 0) return '<p>Мероприятия пока не добавлены</p>';
-            return `
-                <div class="events-grid">
-                    ${events.map(e => `
-                        <div class="event-card">
-                            <img src="${e.image_url}" onerror="this.src='https://picsum.photos/id/100/400/200'">
-                            <div class="event-info">
-                                <div class="event-title">${e.name}</div>
-                                <div class="event-date">📅 ${e.event_date ? new Date(e.event_date).toLocaleDateString('ru-RU') : 'Дата не указана'} ${e.event_time ? ' в ' + e.event_time : ''}</div>
-                                ${e.avg_rating ? `<div class="event-rating">${'★'.repeat(Math.round(e.avg_rating))} ${e.avg_rating.toFixed(1)}/5</div>` : '<div class="event-rating">Нет оценок</div>'}
-                                <div class="event-description">${e.description}</div>
-                                <div class="flex-buttons">
-                                    <button class="btn btn-secondary btn-sm" onclick="showReviews(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отзывы</button>
-                                    ${showStats ? `<button class="btn btn-outline btn-sm" onclick="showEventParticipants(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Участники (${getParticipantsCount(e.id)})</button>` : ''}
-                                    ${!showStats && !showDelete && isLoggedIn && currentUser && currentUser.role === 'user' ? 
-                                        (isUserParticipating(e.id) ? 
-                                            `<button class="btn btn-danger btn-sm" onclick="cancelParticipation(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отменить</button>
-                                             <button class="btn btn-outline btn-sm" onclick="addReview(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Оценить</button>` : 
-                                            `<button class="btn btn-sm" onclick="participateInEvent(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Записаться</button>
-                                             <button class="btn btn-outline btn-sm" onclick="addReview(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Оценить</button>`
-                                        ) : ''}
-                                    ${showDelete ? `<button class="btn btn-danger btn-sm" onclick="deleteEvent(${e.id})">Удалить</button>` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+            return `<div class="events-grid">${events.map(e => `<div class="event-card"><img src="${e.image_url}" onerror="this.src='https://picsum.photos/id/100/400/200'"><div class="event-info"><div class="event-title">${e.name}</div><div class="event-date">📅 ${e.event_date ? new Date(e.event_date).toLocaleDateString('ru-RU') : 'Дата не указана'} ${e.event_time ? ' в ' + e.event_time : ''}</div>${e.avg_rating ? `<div class="event-rating">${'★'.repeat(Math.round(e.avg_rating))} ${e.avg_rating.toFixed(1)}/5</div>` : '<div class="event-rating">Нет оценок</div>'}<div class="event-description">${e.description}</div><div class="flex-buttons"><button class="btn btn-secondary btn-sm" onclick="showReviews(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отзывы</button>${showStats ? `<button class="btn btn-outline btn-sm" onclick="showEventParticipants(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Участники (${getParticipantsCount(e.id)})</button>` : ''}${!showStats && !showDelete && isLoggedIn && currentUser && currentUser.role === 'user' ? (isUserParticipating(e.id) ? `<button class="btn btn-danger btn-sm" onclick="cancelParticipation(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отменить</button><button class="btn btn-outline btn-sm" onclick="addReview(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Оценить</button>` : `<button class="btn btn-sm" onclick="participateInEvent(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Записаться</button><button class="btn btn-outline btn-sm" onclick="addReview(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Оценить</button>`) : ''}${showDelete ? `<button class="btn btn-danger btn-sm" onclick="deleteEvent(${e.id})">Удалить</button>` : ''}</div></div></div>`).join('')}</div>`;
         }
 
         function renderMyRequests() {
@@ -715,59 +659,25 @@
             const app = document.getElementById('app');
             if (!isLoggedIn || !currentUser) {
                 app.innerHTML = `<div class="motivation"><h1>Добро пожаловать</h1><p>Войдите, чтобы записываться на мероприятия</p></div>
-                    <div class="tabs">
-                        <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
-                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button>
-                    </div>
+                    <div class="tabs"><button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button><button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button></div>
                     <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}"><div class="card"><h2>Мероприятия</h2>${renderEventsList(false, false)}</div></div>
                     <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}"><div class="calendar-controls-compact"><button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button><h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3><button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">▶</button></div>${renderCalendarCompact()}</div>`;
             } else if (currentUser.is_admin) {
-                app.innerHTML = `
-                    <div class="tabs">
-                        <button class="tab ${currentTab === 'employees' ? 'active' : ''}" onclick="setTab('employees')">Сотрудники</button>
-                        <button class="tab ${currentTab === 'users' ? 'active' : ''}" onclick="setTab('users')">Пользователи</button>
-                        <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
-                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button>
-                        <button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки</button>
-                        <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
-                    </div>
-                    <div id="employeesTab" class="${currentTab !== 'employees' ? 'hidden' : ''}">
-                        <div class="card"><h2>Добавить сотрудника</h2><div class="form-group"><label>Имя</label><input type="text" id="empName" placeholder="Имя"></div><div class="form-group"><label>Фамилия</label><input type="text" id="empSurname" placeholder="Фамилия"></div><div class="form-group"><label>Телефон</label><input type="tel" id="empPhone" placeholder="Телефон"></div><div class="form-group"><label>Email</label><input type="email" id="empEmail" placeholder="Email"></div><button class="btn btn-success btn-sm" onclick="createEmployee()">Добавить</button></div>
-                        <div class="card"><h2>Сотрудники (${employees.length})</h2>${employees.length === 0 ? '<p>Нет сотрудников</p>' : `<div class="employees-list">${employees.map(emp => `<div class="employee-item"><div><strong>${emp.name} ${emp.surname}</strong><br><small>${emp.email}</small></div><button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.email}')">Удалить</button></div>`).join('')}</div>`}</div>
-                    </div>
-                    <div id="usersTab" class="${currentTab !== 'users' ? 'hidden' : ''}">
-                        <div class="card"><h2>Пользователи (${allUsers.length})</h2>${allUsers.length === 0 ? '<p>Нет пользователей</p>' : `<div class="users-list">${allUsers.map(user => `<div class="user-item"><div><strong>${user.name} ${user.surname}</strong><br><small>${user.email}</small></div><button class="btn btn-danger btn-sm" onclick="deleteUser('${user.email}')">Удалить</button></div>`).join('')}</div>`}</div>
-                    </div>
-                    <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
-                        <div class="card"><h2>Добавить мероприятие</h2><div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div><div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div><div class="form-group"><label>Дата</label><input type="date" id="eventDate"></div><div class="form-group"><label>Время</label><input type="time" id="eventTime"></div><div class="form-group"><label>Фото</label><input type="text" id="eventImage" placeholder="https://..."></div><button class="btn btn-success btn-sm" onclick="addEvent()">Добавить</button></div>
-                        <div class="card"><h2>Все мероприятия</h2>${renderEventsList(true, true)}</div>
-                    </div>
+                app.innerHTML = `<div class="tabs"><button class="tab ${currentTab === 'employees' ? 'active' : ''}" onclick="setTab('employees')">Сотрудники</button><button class="tab ${currentTab === 'users' ? 'active' : ''}" onclick="setTab('users')">Пользователи</button><button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button><button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button><button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки</button><button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button></div>
+                    <div id="employeesTab" class="${currentTab !== 'employees' ? 'hidden' : ''}"><div class="card"><h2>Добавить сотрудника</h2><div class="form-group"><label>Имя</label><input type="text" id="empName" placeholder="Имя"></div><div class="form-group"><label>Фамилия</label><input type="text" id="empSurname" placeholder="Фамилия"></div><div class="form-group"><label>Телефон</label><input type="tel" id="empPhone" placeholder="Телефон"></div><div class="form-group"><label>Email</label><input type="email" id="empEmail" placeholder="Email"></div><button class="btn btn-success btn-sm" onclick="createEmployee()">Добавить</button></div><div class="card"><h2>Сотрудники (${employees.length})</h2>${employees.length === 0 ? '<p>Нет сотрудников</p>' : `<div class="employees-list">${employees.map(emp => `<div class="employee-item"><div><strong>${emp.name} ${emp.surname}</strong><br><small>${emp.email}</small></div><button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.email}')">Удалить</button></div>`).join('')}</div>`}</div></div>
+                    <div id="usersTab" class="${currentTab !== 'users' ? 'hidden' : ''}"><div class="card"><h2>Пользователи (${allUsers.length})</h2>${allUsers.length === 0 ? '<p>Нет пользователей</p>' : `<div class="users-list">${allUsers.map(user => `<div class="user-item"><div><strong>${user.name} ${user.surname}</strong><br><small>${user.email}</small></div><button class="btn btn-danger btn-sm" onclick="deleteUser('${user.email}')">Удалить</button></div>`).join('')}</div>`}</div></div>
+                    <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}"><div class="card"><h2>Добавить мероприятие</h2><div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div><div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div><div class="form-group"><label>Дата</label><input type="date" id="eventDate"></div><div class="form-group"><label>Время</label><input type="time" id="eventTime"></div><div class="form-group"><label>Фото</label><input type="text" id="eventImage" placeholder="https://..."></div><button class="btn btn-success btn-sm" onclick="addEvent()">Добавить</button></div><div class="card"><h2>Все мероприятия</h2>${renderEventsList(true, true)}</div></div>
                     <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}"><div class="calendar-controls-compact"><button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button><h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3><button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">▶</button></div>${renderCalendarCompact()}</div>
-                    <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}"><div class="card"><h2>Заявки</h2>${renderAdminRequests()}</div></div>
+                    <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}"><div class="card"><h2>Заявки от пользователей</h2>${renderAdminRequests()}</div></div>
                     <div id="accountTab" class="${currentTab !== 'account' ? 'hidden' : ''}">${renderAccountTab()}</div>`;
             } else if (currentUser.role === 'employee') {
-                app.innerHTML = `
-                    <div class="tabs">
-                        <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
-                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button>
-                        <button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки</button>
-                        <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
-                    </div>
-                    <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
-                        <div class="card"><h2>Добавить мероприятие</h2><div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div><div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div><div class="form-group"><label>Дата</label><input type="date" id="eventDate"></div><div class="form-group"><label>Время</label><input type="time" id="eventTime"></div><div class="form-group"><label>Фото</label><input type="text" id="eventImage" placeholder="https://..."></div><button class="btn btn-success btn-sm" onclick="addEvent()">Добавить</button></div>
-                        <div class="card"><h2>Все мероприятия</h2>${renderEventsList(false, true)}</div>
-                    </div>
+                app.innerHTML = `<div class="tabs"><button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button><button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button><button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки</button><button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button></div>
+                    <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}"><div class="card"><h2>Добавить мероприятие</h2><div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div><div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div><div class="form-group"><label>Дата</label><input type="date" id="eventDate"></div><div class="form-group"><label>Время</label><input type="time" id="eventTime"></div><div class="form-group"><label>Фото</label><input type="text" id="eventImage" placeholder="https://..."></div><button class="btn btn-success btn-sm" onclick="addEvent()">Добавить</button></div><div class="card"><h2>Все мероприятия</h2>${renderEventsList(false, true)}</div></div>
                     <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}"><div class="calendar-controls-compact"><button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button><h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3><button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">▶</button></div>${renderCalendarCompact()}</div>
-                    <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}"><div class="card"><h2>Заявки</h2>${renderAdminRequests()}</div></div>
+                    <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}"><div class="card"><h2>Заявки от пользователей</h2>${renderAdminRequests()}</div></div>
                     <div id="accountTab" class="${currentTab !== 'account' ? 'hidden' : ''}">${renderAccountTab()}</div>`;
             } else {
-                app.innerHTML = `
-                    <div class="tabs">
-                        <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
-                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button>
-                        <button class="tab ${currentTab === 'my-requests' ? 'active' : ''}" onclick="setTab('my-requests')">Мои заявки</button>
-                        <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
-                    </div>
+                app.innerHTML = `<div class="tabs"><button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button><button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button><button class="tab ${currentTab === 'my-requests' ? 'active' : ''}" onclick="setTab('my-requests')">Мои заявки</button><button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button></div>
                     <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}"><div class="card"><h2>Мероприятия</h2>${renderEventsList(false, false)}</div><div class="card"><h2>Предложить мероприятие</h2><button class="btn btn-warning btn-sm" onclick="showRequestModal()">Предложить идею</button></div></div>
                     <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}"><div class="calendar-controls-compact"><button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button><h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3><button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">▶</button></div>${renderCalendarCompact()}</div>
                     <div id="my-requestsTab" class="${currentTab !== 'my-requests' ? 'hidden' : ''}"><div class="card"><h2>Мои заявки</h2>${renderMyRequests()}</div></div>
