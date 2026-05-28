@@ -67,14 +67,16 @@ app.get('/api/events', (req, res) => {
 });
 
 app.post('/api/events', (req, res) => {
-    const { name, description, image_url, added_by_email } = req.body;
+    const { name, description, image_url, added_by_email, event_date, event_time } = req.body;
     const newEvent = {
         id: nextEventId++,
         name,
         description,
         image_url: image_url || 'https://picsum.photos/id/100/400/200',
         avg_rating: 0,
-        added_by_email
+        added_by_email,
+        event_date: event_date || null,
+        event_time: event_time || null
     };
     events.push(newEvent);
     persist();

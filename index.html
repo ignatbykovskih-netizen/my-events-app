@@ -32,6 +32,7 @@
         .event-card img { width: 100%; height: 180px; object-fit: cover; }
         .event-info { padding: 1rem; }
         .event-title { font-weight: bold; font-size: 1.1rem; }
+        .event-date { font-size: 0.8rem; color: #667eea; margin: 0.25rem 0; font-weight: bold; }
         .event-rating { color: #f59e0b; font-size: 0.8rem; margin: 5px 0; }
         .event-description { font-size: 0.85rem; color: #555; margin: 0.5rem 0; line-height: 1.4; }
         .flex-buttons { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
@@ -331,16 +332,29 @@
         async function addEvent() {
             const name = document.getElementById('eventName')?.value.trim();
             const description = document.getElementById('eventDescription')?.value.trim();
+            const eventDate = document.getElementById('eventDate')?.value;
+            const eventTime = document.getElementById('eventTime')?.value;
             let image_url = document.getElementById('eventImage')?.value.trim();
+            
             if (!name || !description) { alert('Заполните название и описание'); return; }
             if (!image_url) image_url = 'https://picsum.photos/id/100/400/200';
+            
             await fetch(`${API_URL}/events`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, description, image_url, added_by_email: currentUser.email })
+                body: JSON.stringify({ 
+                    name, description, image_url, 
+                    added_by_email: currentUser.email,
+                    event_date: eventDate,
+                    event_time: eventTime
+                })
             });
+            
             document.getElementById('eventName').value = '';
             document.getElementById('eventDescription').value = '';
+            document.getElementById('eventDate').value = '';
+            document.getElementById('eventTime').value = '';
             document.getElementById('eventImage').value = '';
+            
             await loadEvents();
             render();
             alert('Мероприятие добавлено');
@@ -532,6 +546,7 @@
                             <img src="${e.image_url}" onerror="this.src='https://picsum.photos/id/100/400/200'">
                             <div class="event-info">
                                 <div class="event-title">${e.name}</div>
+                                <div class="event-date">📅 ${e.event_date ? new Date(e.event_date).toLocaleDateString('ru-RU') : 'Дата не указана'} ${e.event_time ? ' в ' + e.event_time : ''}</div>
                                 ${e.avg_rating ? `<div class="event-rating">${'★'.repeat(Math.round(e.avg_rating))} ${e.avg_rating.toFixed(1)}/5</div>` : '<div class="event-rating">Нет оценок</div>'}
                                 <div class="event-description">${e.description}</div>
                                 <div class="flex-buttons">
@@ -637,6 +652,8 @@
                         <div class="card"><h2>Добавить мероприятие</h2>
                             <div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div>
                             <div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div>
+                            <div class="form-group"><label>Дата проведения</label><input type="date" id="eventDate"></div>
+                            <div class="form-group"><label>Время проведения</label><input type="time" id="eventTime"></div>
                             <div class="form-group"><label>Ссылка на фото</label><input type="text" id="eventImage" placeholder="https://..."></div>
                             <button class="btn btn-success" onclick="addEvent()">Добавить мероприятие</button>
                         </div>
@@ -658,6 +675,8 @@
                         <div class="card"><h2>Добавить мероприятие</h2>
                             <div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div>
                             <div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div>
+                            <div class="form-group"><label>Дата проведения</label><input type="date" id="eventDate"></div>
+                            <div class="form-group"><label>Время проведения</label><input type="time" id="eventTime"></div>
                             <div class="form-group"><label>Ссылка на фото</label><input type="text" id="eventImage" placeholder="https://..."></div>
                             <button class="btn btn-success" onclick="addEvent()">Добавить мероприятие</button>
                         </div>
