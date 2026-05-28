@@ -112,6 +112,7 @@
         let eventRequests = [];
         let myRequests = [];
         let participantsCount = {};
+        let myParticipations = [];
         let currentTab = 'events';
 
         function saveSession() {
@@ -143,11 +144,22 @@
                 if (currentUser && (currentUser.role === 'employee' || currentUser.is_admin)) {
                     await loadParticipantsCount();
                 }
+                if (isLoggedIn && currentUser && currentUser.role === 'user') {
+                    await loadMyParticipations();
+                }
                 render();
             } catch (err) {
                 console.error(err);
                 document.getElementById('app').innerHTML = '<div class="card"><p style="color:red;">Ошибка: сервер не запущен</p></div>';
             }
+        }
+
+        async function loadMyParticipations() {
+            if (!isLoggedIn) return;
+            try {
+                const res = await fetch(`${API_URL}/my-participations?userEmail=${currentUser.email}`);
+                myParticipations = await res.json();
+            } catch (err) { console.error(err); }
         }
 
         async function loadParticipantsCount() {
@@ -160,6 +172,10 @@
                     participantsCount[p.event_id] = (participantsCount[p.event_id] || 0) + 1;
                 });
             } catch (err) { console.error(err); }
+        }
+
+        function isUserParticipating(eventId) {
+            return myParticipations.some(p => p.event_id === eventId);
         }
 
         async function showEventParticipants(eventId, eventName) {
@@ -301,6 +317,7 @@
             eventRequests = [];
             myRequests = [];
             participantsCount = {};
+            myParticipations = [];
             saveSession();
             updateUI();
             loadEvents();
@@ -388,8 +405,13 @@
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ user_email: currentUser.email, user_name: currentUser.name, event_id: eventId, event_name: eventName })
             });
-            if (res.ok) alert('Вы записаны на мероприятие');
-            else alert('Ошибка или вы уже записаны');
+            if (res.ok) {
+                alert('Вы записаны на мероприятие');
+                await loadMyParticipations();
+                await loadEvents();
+            } else {
+                alert('Ошибка или вы уже записаны');
+            }
         }
 
         async function cancelParticipation(eventId, eventName) {
@@ -400,6 +422,7 @@
             });
             if (res.ok) {
                 alert('Вы отменили запись');
+                await loadMyParticipations();
                 await loadEvents();
             } else { alert('Ошибка'); }
         }
@@ -514,9 +537,13 @@
                                 <div class="flex-buttons">
                                     <button class="btn btn-secondary" onclick="showReviews(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отзывы</button>
                                     ${showStats ? `<button class="btn btn-outline" onclick="showEventParticipants(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Участники (${getParticipantsCount(e.id)})</button>` : ''}
-                                    ${!showStats && !showDelete && isLoggedIn && currentUser && currentUser.role === 'user' ? `<button class="btn" onclick="participateInEvent(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Записаться</button>
-                                    <button class="btn btn-outline" onclick="addReview(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Оценить</button>
-                                    <button class="btn btn-danger" onclick="cancelParticipation(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отменить запись</button>` : ''}
+                                    ${!showStats && !showDelete && isLoggedIn && currentUser && currentUser.role === 'user' ? 
+                                        (isUserParticipating(e.id) ? 
+                                            `<button class="btn btn-danger" onclick="cancelParticipation(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отменить запись</button>
+                                             <button class="btn btn-outline" onclick="addReview(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Оценить</button>` : 
+                                            `<button class="btn" onclick="participateInEvent(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Записаться</button>
+                                             <button class="btn btn-outline" onclick="addReview(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Оценить</button>`
+                                        ) : ''}
                                     ${showDelete ? `<button class="btn btn-danger" onclick="deleteEvent(${e.id})">Удалить</button>` : ''}
                                 </div>
                             </div>
