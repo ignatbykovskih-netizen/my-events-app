@@ -26,122 +26,120 @@
         .container { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
         .card { background: white; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .card h2 { margin-bottom: 1rem; border-left: 4px solid #667eea; padding-left: 1rem; }
-        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
         .event-card { background: white; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s; }
         .event-card:hover { transform: translateY(-5px); }
-        .event-card img { width: 100%; height: 180px; object-fit: cover; }
+        .event-card img { width: 100%; height: 160px; object-fit: cover; }
         .event-info { padding: 1rem; }
-        .event-title { font-weight: bold; font-size: 1.1rem; }
-        .event-date { font-size: 0.8rem; color: #667eea; margin: 0.25rem 0; font-weight: bold; }
-        .event-rating { color: #f59e0b; font-size: 0.8rem; margin: 5px 0; }
-        .event-description { font-size: 0.85rem; color: #555; margin: 0.5rem 0; line-height: 1.4; }
-        .flex-buttons { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+        .event-title { font-weight: bold; font-size: 1rem; }
+        .event-date { font-size: 0.75rem; color: #667eea; margin: 0.25rem 0; }
+        .event-rating { color: #f59e0b; font-size: 0.7rem; margin: 3px 0; }
+        .event-description { font-size: 0.8rem; color: #555; margin: 0.5rem 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .flex-buttons { display: flex; gap: 0.3rem; margin-top: 0.5rem; flex-wrap: wrap; }
+        .flex-buttons .btn { padding: 0.25rem 0.5rem; font-size: 0.7rem; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 1rem; padding: 2rem; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
-        .close-modal { float: right; font-size: 1.5rem; cursor: pointer; }
-        .motivation { background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-align: center; padding: 3rem; border-radius: 1rem; margin-bottom: 2rem; }
-        footer { background: #1a1a2e; color: white; text-align: center; padding: 2rem; margin-top: 3rem; }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; margin-bottom: 0.3rem; font-weight: bold; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 0.5rem; font-family: inherit; }
-        .rating-stars { color: #f59e0b; font-size: 1.2rem; letter-spacing: 2px; }
-        .review-item { border-bottom: 1px solid #ddd; padding: 10px 0; }
-        .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e5e7eb; flex-wrap: wrap; }
-        .tab { padding: 0.75rem 1.5rem; cursor: pointer; border: none; background: rgba(255,255,255,0.9); font-weight: bold; font-size: 1rem; color: #333; border-radius: 0.5rem 0.5rem 0 0; }
+        .modal-content { background: white; border-radius: 1rem; padding: 1.5rem; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .close-modal { float: right; font-size: 1.2rem; cursor: pointer; }
+        .motivation { background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-align: center; padding: 2rem; border-radius: 1rem; margin-bottom: 1.5rem; }
+        footer { background: #1a1a2e; color: white; text-align: center; padding: 1.5rem; margin-top: 2rem; font-size: 0.8rem; }
+        .form-group { margin-bottom: 0.8rem; }
+        .form-group label { display: block; margin-bottom: 0.2rem; font-weight: bold; font-size: 0.9rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 0.5rem; font-size: 0.9rem; }
+        .form-group textarea { min-height: 60px; }
+        .tabs { display: flex; gap: 0.3rem; margin-bottom: 1rem; border-bottom: 2px solid #e5e7eb; flex-wrap: wrap; }
+        .tab { padding: 0.5rem 1rem; cursor: pointer; border: none; background: rgba(255,255,255,0.9); font-weight: bold; font-size: 0.9rem; color: #333; border-radius: 0.5rem 0.5rem 0 0; }
         .tab.active { color: #667eea; border-bottom: 3px solid #667eea; background: white; }
         .hidden { display: none; }
-        .profile-info { background: #f9fafb; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem; }
-        .profile-info p { margin: 0.5rem 0; }
-        .edit-form { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; }
+        .profile-info { background: #f9fafb; padding: 0.8rem; border-radius: 0.5rem; margin-bottom: 0.8rem; font-size: 0.9rem; }
+        .profile-info p { margin: 0.3rem 0; }
+        .edit-form { margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid #e5e7eb; }
         .employees-list, .users-list, .requests-list { display: flex; flex-direction: column; gap: 0.5rem; }
-        .employee-item, .user-item, .request-item { background: #f5f5f5; padding: 0.75rem; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .badge-pending { background: #f59e0b; color: #333; padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; }
-        .badge-approved { background: #10b981; color: white; padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; }
-        .badge-rejected { background: #dc2626; color: white; padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; }
-        /* Календарь */
-        .calendar {
+        .employee-item, .user-item, .request-item { background: #f5f5f5; padding: 0.5rem; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; font-size: 0.8rem; }
+        .badge-pending { background: #f59e0b; color: #333; padding: 0.1rem 0.4rem; border-radius: 1rem; font-size: 0.6rem; }
+        .badge-approved { background: #10b981; color: white; padding: 0.1rem 0.4rem; border-radius: 1rem; font-size: 0.6rem; }
+        .badge-rejected { background: #dc2626; color: white; padding: 0.1rem 0.4rem; border-radius: 1rem; font-size: 0.6rem; }
+        /* Компактный календарь */
+        .calendar-compact {
             background: white;
-            border-radius: 1rem;
+            border-radius: 0.8rem;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
         }
-        .calendar-header {
+        .calendar-header-compact {
             background: #667eea;
             color: white;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
             font-weight: bold;
+            font-size: 0.7rem;
         }
-        .calendar-header div {
-            padding: 1rem;
+        .calendar-header-compact div {
+            padding: 0.5rem;
         }
-        .calendar-week {
+        .calendar-week-compact {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
         }
-        .calendar-day {
-            min-height: 100px;
+        .calendar-day-compact {
+            min-height: 50px;
             border: 1px solid #e5e7eb;
-            padding: 0.5rem;
-            vertical-align: top;
+            padding: 0.2rem;
             background: white;
-            transition: 0.2s;
+            font-size: 0.7rem;
+            position: relative;
         }
-        .calendar-day:hover {
-            background: #f9fafb;
-        }
-        .calendar-day-number {
+        .calendar-day-number-compact {
             font-weight: bold;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.2rem;
             color: #4b5563;
-        }
-        .calendar-day-events {
             font-size: 0.7rem;
         }
-        .calendar-day-events div {
+        .calendar-day-events-compact div {
             background: #e0e7ff;
-            margin: 0.2rem 0;
-            padding: 0.2rem 0.3rem;
-            border-radius: 0.25rem;
+            margin: 0.1rem 0;
+            padding: 0.1rem 0.2rem;
+            border-radius: 0.2rem;
             cursor: pointer;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            font-size: 0.6rem;
         }
-        .calendar-day-events div:hover {
-            background: #c7d2fe;
-        }
-        .calendar-empty {
+        .calendar-empty-compact {
             background: #f9fafb;
             color: #9ca3af;
         }
-        .calendar-controls {
+        .calendar-controls-compact {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.5rem;
         }
-        .calendar-controls h3 {
-            font-size: 1.5rem;
+        .calendar-controls-compact h3 {
+            font-size: 1.1rem;
             color: #333;
+        }
+        .calendar-controls-compact .btn-sm {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
         }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <div class="logo">Мероприятия PRO</div>
+        <div class="logo">🎯 Мероприятия PRO</div>
         <div class="user-info" id="userInfo">
             <span class="user-badge" id="userRoleBadge">Не авторизован</span>
             <button class="btn" id="authBtn" onclick="showAuthModal()">Войти / Регистрация</button>
         </div>
     </nav>
     <div class="container" id="app"></div>
-    <footer><p>2026 Платформа управления мероприятиями</p></footer>
+    <footer><p>© 2026 Платформа управления мероприятиями</p></footer>
 
     <div id="authModal" class="modal">
         <div class="modal-content">
@@ -160,7 +158,7 @@
             <span class="close-modal" onclick="closeReviewsModal()">&times;</span>
             <h3 id="reviewsTitle">Отзывы</h3>
             <div id="reviewsList"></div>
-            <button class="btn btn-secondary btn-sm" style="margin-top:1rem;" onclick="closeReviewsModal()">Закрыть</button>
+            <button class="btn btn-secondary btn-sm" onclick="closeReviewsModal()">Закрыть</button>
         </div>
     </div>
 
@@ -169,7 +167,7 @@
             <span class="close-modal" onclick="closeRequestModal()">&times;</span>
             <h2>Предложить мероприятие</h2>
             <div class="form-group"><label>Название</label><input type="text" id="requestTitle" placeholder="Название мероприятия"></div>
-            <div class="form-group"><label>Описание</label><textarea id="requestDescription" rows="4" placeholder="Опишите вашу идею..."></textarea></div>
+            <div class="form-group"><label>Описание</label><textarea id="requestDescription" rows="3" placeholder="Опишите вашу идею..."></textarea></div>
             <button class="btn btn-success" onclick="submitEventRequest()">Отправить заявку</button>
         </div>
     </div>
@@ -417,7 +415,7 @@
             render();
         }
 
-        function renderCalendar() {
+        function renderCalendarCompact() {
             const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
             const startDay = firstDayOfMonth.getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -432,31 +430,31 @@
                 }
             });
             
-            let calendarHtml = '<div class="calendar"><div class="calendar-header">';
+            let calendarHtml = '<div class="calendar-compact"><div class="calendar-header-compact">';
             const weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
             weekdays.forEach(day => {
                 calendarHtml += `<div>${day}</div>`;
             });
-            calendarHtml += '</div><div class="calendar-week">';
+            calendarHtml += '</div><div class="calendar-week-compact">';
             
             let startOffset = startDay === 0 ? 6 : startDay - 1;
             for (let i = 0; i < startOffset; i++) {
-                calendarHtml += `<div class="calendar-day calendar-empty"></div>`;
+                calendarHtml += `<div class="calendar-day-compact calendar-empty-compact"></div>`;
             }
             
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateKey = `${currentYear}-${currentMonth + 1}-${day}`;
                 const dayEvents = eventsByDate[dateKey] || [];
                 
-                calendarHtml += `<div class="calendar-day">
-                    <div class="calendar-day-number">${day}</div>
-                    <div class="calendar-day-events">`;
+                calendarHtml += `<div class="calendar-day-compact">
+                    <div class="calendar-day-number-compact">${day}</div>
+                    <div class="calendar-day-events-compact">`;
                 
-                dayEvents.slice(0, 3).forEach(event => {
-                    calendarHtml += `<div onclick="openEventModal(${event.id})" title="${event.name}">📌 ${event.name.substring(0, 20)}${event.name.length > 20 ? '...' : ''}</div>`;
+                dayEvents.slice(0, 2).forEach(event => {
+                    calendarHtml += `<div onclick="openEventModal(${event.id})" title="${event.name}">📌 ${event.name.substring(0, 12)}${event.name.length > 12 ? '...' : ''}</div>`;
                 });
-                if (dayEvents.length > 3) {
-                    calendarHtml += `<div style="color:#667eea; font-size:0.6rem;">ещё ${dayEvents.length - 3}...</div>`;
+                if (dayEvents.length > 2) {
+                    calendarHtml += `<div style="color:#667eea; font-size:0.5rem;">+${dayEvents.length - 2}</div>`;
                 }
                 
                 calendarHtml += `</div></div>`;
@@ -465,7 +463,7 @@
             const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
             const remainingCells = totalCells - (startOffset + daysInMonth);
             for (let i = 0; i < remainingCells; i++) {
-                calendarHtml += `<div class="calendar-day calendar-empty"></div>`;
+                calendarHtml += `<div class="calendar-day-compact calendar-empty-compact"></div>`;
             }
             
             calendarHtml += '</div></div>';
@@ -478,26 +476,17 @@
             const eventDate = document.getElementById('eventDate')?.value;
             const eventTime = document.getElementById('eventTime')?.value;
             let image_url = document.getElementById('eventImage')?.value.trim();
-            
             if (!name || !description) { alert('Заполните название и описание'); return; }
             if (!image_url) image_url = 'https://picsum.photos/id/100/400/200';
-            
             await fetch(`${API_URL}/events`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    name, description, image_url, 
-                    added_by_email: currentUser.email,
-                    event_date: eventDate,
-                    event_time: eventTime
-                })
+                body: JSON.stringify({ name, description, image_url, added_by_email: currentUser.email, event_date: eventDate, event_time: eventTime })
             });
-            
             document.getElementById('eventName').value = '';
             document.getElementById('eventDescription').value = '';
             document.getElementById('eventDate').value = '';
             document.getElementById('eventTime').value = '';
             document.getElementById('eventImage').value = '';
-            
             await loadEvents();
             render();
             alert('Мероприятие добавлено');
@@ -588,14 +577,9 @@
             const title = document.getElementById('requestTitle').value.trim();
             const description = document.getElementById('requestDescription').value.trim();
             if (!title || !description) { alert('Заполните название и описание'); return; }
-            
             const res = await fetch(`${API_URL}/event-requests`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    title, description,
-                    author_email: currentUser.email,
-                    author_name: `${currentUser.name} ${currentUser.surname}`
-                })
+                body: JSON.stringify({ title, description, author_email: currentUser.email, author_name: `${currentUser.name} ${currentUser.surname}` })
             });
             if (res.ok) {
                 alert('Заявка отправлена');
@@ -680,7 +664,7 @@
                         <div class="form-group"><label>Имя</label><input type="text" id="editName" value="${currentUser.name}"></div>
                         <div class="form-group"><label>Фамилия</label><input type="text" id="editSurname" value="${currentUser.surname}"></div>
                         <div class="form-group"><label>Телефон</label><input type="tel" id="editPhone" value="${currentUser.phone}"></div>
-                        <button class="btn" onclick="updateProfile()">Сохранить изменения</button>
+                        <button class="btn btn-sm" onclick="updateProfile()">Сохранить</button>
                     </div>
                 </div>
             `;
@@ -699,16 +683,16 @@
                                 ${e.avg_rating ? `<div class="event-rating">${'★'.repeat(Math.round(e.avg_rating))} ${e.avg_rating.toFixed(1)}/5</div>` : '<div class="event-rating">Нет оценок</div>'}
                                 <div class="event-description">${e.description}</div>
                                 <div class="flex-buttons">
-                                    <button class="btn btn-secondary" onclick="showReviews(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отзывы</button>
-                                    ${showStats ? `<button class="btn btn-outline" onclick="showEventParticipants(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Участники (${getParticipantsCount(e.id)})</button>` : ''}
+                                    <button class="btn btn-secondary btn-sm" onclick="showReviews(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отзывы</button>
+                                    ${showStats ? `<button class="btn btn-outline btn-sm" onclick="showEventParticipants(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Участники (${getParticipantsCount(e.id)})</button>` : ''}
                                     ${!showStats && !showDelete && isLoggedIn && currentUser && currentUser.role === 'user' ? 
                                         (isUserParticipating(e.id) ? 
-                                            `<button class="btn btn-danger" onclick="cancelParticipation(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отменить запись</button>
-                                             <button class="btn btn-outline" onclick="addReview(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Оценить</button>` : 
-                                            `<button class="btn" onclick="participateInEvent(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Записаться</button>
-                                             <button class="btn btn-outline" onclick="addReview(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Оценить</button>`
+                                            `<button class="btn btn-danger btn-sm" onclick="cancelParticipation(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отменить</button>
+                                             <button class="btn btn-outline btn-sm" onclick="addReview(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Оценить</button>` : 
+                                            `<button class="btn btn-sm" onclick="participateInEvent(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Записаться</button>
+                                             <button class="btn btn-outline btn-sm" onclick="addReview(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Оценить</button>`
                                         ) : ''}
-                                    ${showDelete ? `<button class="btn btn-danger" onclick="deleteEvent(${e.id})">Удалить</button>` : ''}
+                                    ${showDelete ? `<button class="btn btn-danger btn-sm" onclick="deleteEvent(${e.id})">Удалить</button>` : ''}
                                 </div>
                             </div>
                         </div>
@@ -719,166 +703,75 @@
 
         function renderMyRequests() {
             if (myRequests.length === 0) return '<p>Вы ещё не отправляли заявок</p>';
-            return `
-                <div class="requests-list">
-                    ${myRequests.map(r => `
-                        <div class="request-item">
-                            <div>
-                                <strong>${r.title}</strong>
-                                <span class="${r.status === 'pending' ? 'badge-pending' : (r.status === 'approved' ? 'badge-approved' : 'badge-rejected')}">
-                                    ${r.status === 'pending' ? 'На рассмотрении' : (r.status === 'approved' ? 'Одобрена' : 'Отклонена')}
-                                </span>
-                                <br><small>${r.description.substring(0, 100)}${r.description.length > 100 ? '...' : ''}</small>
-                                ${r.admin_comment ? `<br><small>Комментарий: ${r.admin_comment}</small>` : ''}
-                                <br><small>${new Date(r.created_at).toLocaleDateString()}</small>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+            return `<div class="requests-list">${myRequests.map(r => `<div class="request-item"><div><strong>${r.title}</strong><span class="${r.status === 'pending' ? 'badge-pending' : (r.status === 'approved' ? 'badge-approved' : 'badge-rejected')}">${r.status === 'pending' ? 'На рассмотрении' : (r.status === 'approved' ? 'Одобрена' : 'Отклонена')}</span><br><small>${r.description.substring(0, 80)}...</small><br><small>${new Date(r.created_at).toLocaleDateString()}</small></div></div>`).join('')}</div>`;
         }
 
         function renderAdminRequests() {
             if (eventRequests.length === 0) return '<p>Нет заявок</p>';
-            return `
-                <div class="requests-list">
-                    ${eventRequests.map(r => `
-                        <div class="request-item">
-                            <div>
-                                <strong>${r.title}</strong>
-                                <span class="${r.status === 'pending' ? 'badge-pending' : (r.status === 'approved' ? 'badge-approved' : 'badge-rejected')}">
-                                    ${r.status === 'pending' ? 'На рассмотрении' : (r.status === 'approved' ? 'Одобрена' : 'Отклонена')}
-                                </span>
-                                <br><small>${r.description}</small>
-                                <br><small>👤 ${r.author_name} (${r.author_email})</small>
-                                <br><small>📅 ${new Date(r.created_at).toLocaleDateString()}</small>
-                                ${r.admin_comment ? `<br><small>Ваш комментарий: ${r.admin_comment}</small>` : ''}
-                            </div>
-                            ${r.status === 'pending' ? `
-                            <div style="display:flex; gap:0.5rem;">
-                                <button class="btn btn-success btn-sm" onclick="updateRequestStatus(${r.id}, 'approved')">Одобрить</button>
-                                <button class="btn btn-danger btn-sm" onclick="updateRequestStatus(${r.id}, 'rejected')">Отклонить</button>
-                            </div>
-                            ` : ''}
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+            return `<div class="requests-list">${eventRequests.map(r => `<div class="request-item"><div><strong>${r.title}</strong><span class="${r.status === 'pending' ? 'badge-pending' : (r.status === 'approved' ? 'badge-approved' : 'badge-rejected')}">${r.status === 'pending' ? 'На рассмотрении' : (r.status === 'approved' ? 'Одобрена' : 'Отклонена')}</span><br><small>${r.description}</small><br><small>👤 ${r.author_name}</small><br><small>📅 ${new Date(r.created_at).toLocaleDateString()}</small></div>${r.status === 'pending' ? `<div><button class="btn btn-success btn-sm" onclick="updateRequestStatus(${r.id}, 'approved')">✅</button><button class="btn btn-danger btn-sm" onclick="updateRequestStatus(${r.id}, 'rejected')">❌</button></div>` : ''}</div>`).join('')}</div>`;
         }
 
         function render() {
             const app = document.getElementById('app');
             if (!isLoggedIn || !currentUser) {
                 app.innerHTML = `<div class="motivation"><h1>Добро пожаловать</h1><p>Войдите, чтобы записываться на мероприятия</p></div>
-                <div class="calendar-controls">
-                    <button class="btn btn-secondary" onclick="changeMonth(-1)">◀ Предыдущий</button>
-                    <h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3>
-                    <button class="btn btn-secondary" onclick="changeMonth(1)">Следующий ▶</button>
-                </div>
-                ${renderCalendar()}
-                <div class="card"><h2>Мероприятия</h2>${renderEventsList(false, false)}</div>`;
+                    <div class="tabs">
+                        <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
+                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button>
+                    </div>
+                    <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}"><div class="card"><h2>Мероприятия</h2>${renderEventsList(false, false)}</div></div>
+                    <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}"><div class="calendar-controls-compact"><button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button><h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3><button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">▶</button></div>${renderCalendarCompact()}</div>`;
             } else if (currentUser.is_admin) {
                 app.innerHTML = `
                     <div class="tabs">
                         <button class="tab ${currentTab === 'employees' ? 'active' : ''}" onclick="setTab('employees')">Сотрудники</button>
                         <button class="tab ${currentTab === 'users' ? 'active' : ''}" onclick="setTab('users')">Пользователи</button>
                         <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
-                        <button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки (${eventRequests.filter(r => r.status === 'pending').length})</button>
+                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button>
+                        <button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки</button>
                         <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
                     </div>
                     <div id="employeesTab" class="${currentTab !== 'employees' ? 'hidden' : ''}">
-                        <div class="card"><h2>Добавить сотрудника</h2>
-                            <div class="form-group"><label>Имя</label><input type="text" id="empName" placeholder="Имя"></div>
-                            <div class="form-group"><label>Фамилия</label><input type="text" id="empSurname" placeholder="Фамилия"></div>
-                            <div class="form-group"><label>Телефон</label><input type="tel" id="empPhone" placeholder="Телефон"></div>
-                            <div class="form-group"><label>Email</label><input type="email" id="empEmail" placeholder="Email"></div>
-                            <button class="btn btn-success" onclick="createEmployee()">Добавить сотрудника</button>
-                        </div>
-                        <div class="card"><h2>Список сотрудников (${employees.length})</h2>
-                            ${employees.length === 0 ? '<p>Нет сотрудников</p>' : `<div class="employees-list">${employees.map(emp => `<div class="employee-item"><div><strong>${emp.name} ${emp.surname}</strong><br><small>${emp.email} | ${emp.phone}</small></div><button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.email}')">Удалить</button></div>`).join('')}</div>`}
-                        </div>
+                        <div class="card"><h2>Добавить сотрудника</h2><div class="form-group"><label>Имя</label><input type="text" id="empName" placeholder="Имя"></div><div class="form-group"><label>Фамилия</label><input type="text" id="empSurname" placeholder="Фамилия"></div><div class="form-group"><label>Телефон</label><input type="tel" id="empPhone" placeholder="Телефон"></div><div class="form-group"><label>Email</label><input type="email" id="empEmail" placeholder="Email"></div><button class="btn btn-success btn-sm" onclick="createEmployee()">Добавить</button></div>
+                        <div class="card"><h2>Сотрудники (${employees.length})</h2>${employees.length === 0 ? '<p>Нет сотрудников</p>' : `<div class="employees-list">${employees.map(emp => `<div class="employee-item"><div><strong>${emp.name} ${emp.surname}</strong><br><small>${emp.email}</small></div><button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.email}')">Удалить</button></div>`).join('')}</div>`}</div>
                     </div>
                     <div id="usersTab" class="${currentTab !== 'users' ? 'hidden' : ''}">
-                        <div class="card"><h2>Список пользователей (${allUsers.length})</h2>
-                            ${allUsers.length === 0 ? '<p>Нет зарегистрированных пользователей</p>' : `<div class="users-list">${allUsers.map(user => `<div class="user-item"><div><strong>${user.name} ${user.surname}</strong><br><small>${user.email} | ${user.phone}</small><small>Роль: ${user.role === 'employee' ? 'Сотрудник' : 'Пользователь'}</small></div><button class="btn btn-danger btn-sm" onclick="deleteUser('${user.email}')">Удалить</button></div>`).join('')}</div>`}
-                        </div>
+                        <div class="card"><h2>Пользователи (${allUsers.length})</h2>${allUsers.length === 0 ? '<p>Нет пользователей</p>' : `<div class="users-list">${allUsers.map(user => `<div class="user-item"><div><strong>${user.name} ${user.surname}</strong><br><small>${user.email}</small></div><button class="btn btn-danger btn-sm" onclick="deleteUser('${user.email}')">Удалить</button></div>`).join('')}</div>`}</div>
                     </div>
                     <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
-                        <div class="card"><h2>Добавить мероприятие</h2>
-                            <div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div>
-                            <div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div>
-                            <div class="form-group"><label>Дата проведения</label><input type="date" id="eventDate"></div>
-                            <div class="form-group"><label>Время проведения</label><input type="time" id="eventTime"></div>
-                            <div class="form-group"><label>Ссылка на фото</label><input type="text" id="eventImage" placeholder="https://..."></div>
-                            <button class="btn btn-success" onclick="addEvent()">Добавить мероприятие</button>
-                        </div>
-                        <div class="calendar-controls">
-                            <button class="btn btn-secondary" onclick="changeMonth(-1)">◀ Предыдущий</button>
-                            <h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3>
-                            <button class="btn btn-secondary" onclick="changeMonth(1)">Следующий ▶</button>
-                        </div>
-                        ${renderCalendar()}
-                        <div class="card"><h2>Все мероприятия (${events.length})</h2>${renderEventsList(true, true)}</div>
+                        <div class="card"><h2>Добавить мероприятие</h2><div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div><div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div><div class="form-group"><label>Дата</label><input type="date" id="eventDate"></div><div class="form-group"><label>Время</label><input type="time" id="eventTime"></div><div class="form-group"><label>Фото</label><input type="text" id="eventImage" placeholder="https://..."></div><button class="btn btn-success btn-sm" onclick="addEvent()">Добавить</button></div>
+                        <div class="card"><h2>Все мероприятия</h2>${renderEventsList(true, true)}</div>
                     </div>
-                    <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}">
-                        <div class="card"><h2>Заявки от пользователей</h2>${renderAdminRequests()}</div>
-                    </div>
-                    <div id="accountTab" class="${currentTab !== 'account' ? 'hidden' : ''}">${renderAccountTab()}</div>
-                `;
+                    <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}"><div class="calendar-controls-compact"><button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button><h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3><button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">▶</button></div>${renderCalendarCompact()}</div>
+                    <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}"><div class="card"><h2>Заявки</h2>${renderAdminRequests()}</div></div>
+                    <div id="accountTab" class="${currentTab !== 'account' ? 'hidden' : ''}">${renderAccountTab()}</div>`;
             } else if (currentUser.role === 'employee') {
                 app.innerHTML = `
                     <div class="tabs">
                         <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
-                        <button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки (${eventRequests.filter(r => r.status === 'pending').length})</button>
+                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button>
+                        <button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки</button>
                         <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
                     </div>
                     <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
-                        <div class="card"><h2>Добавить мероприятие</h2>
-                            <div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div>
-                            <div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div>
-                            <div class="form-group"><label>Дата проведения</label><input type="date" id="eventDate"></div>
-                            <div class="form-group"><label>Время проведения</label><input type="time" id="eventTime"></div>
-                            <div class="form-group"><label>Ссылка на фото</label><input type="text" id="eventImage" placeholder="https://..."></div>
-                            <button class="btn btn-success" onclick="addEvent()">Добавить мероприятие</button>
-                        </div>
-                        <div class="calendar-controls">
-                            <button class="btn btn-secondary" onclick="changeMonth(-1)">◀ Предыдущий</button>
-                            <h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3>
-                            <button class="btn btn-secondary" onclick="changeMonth(1)">Следующий ▶</button>
-                        </div>
-                        ${renderCalendar()}
+                        <div class="card"><h2>Добавить мероприятие</h2><div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div><div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div><div class="form-group"><label>Дата</label><input type="date" id="eventDate"></div><div class="form-group"><label>Время</label><input type="time" id="eventTime"></div><div class="form-group"><label>Фото</label><input type="text" id="eventImage" placeholder="https://..."></div><button class="btn btn-success btn-sm" onclick="addEvent()">Добавить</button></div>
                         <div class="card"><h2>Все мероприятия</h2>${renderEventsList(false, true)}</div>
                     </div>
-                    <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}">
-                        <div class="card"><h2>Заявки от пользователей</h2>${renderAdminRequests()}</div>
-                    </div>
-                    <div id="accountTab" class="${currentTab !== 'account' ? 'hidden' : ''}">${renderAccountTab()}</div>
-                `;
+                    <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}"><div class="calendar-controls-compact"><button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button><h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3><button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">▶</button></div>${renderCalendarCompact()}</div>
+                    <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}"><div class="card"><h2>Заявки</h2>${renderAdminRequests()}</div></div>
+                    <div id="accountTab" class="${currentTab !== 'account' ? 'hidden' : ''}">${renderAccountTab()}</div>`;
             } else {
                 app.innerHTML = `
                     <div class="tabs">
                         <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
+                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button>
                         <button class="tab ${currentTab === 'my-requests' ? 'active' : ''}" onclick="setTab('my-requests')">Мои заявки</button>
                         <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
                     </div>
-                    <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
-                        <div class="calendar-controls">
-                            <button class="btn btn-secondary" onclick="changeMonth(-1)">◀ Предыдущий</button>
-                            <h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3>
-                            <button class="btn btn-secondary" onclick="changeMonth(1)">Следующий ▶</button>
-                        </div>
-                        ${renderCalendar()}
-                        <div class="card"><h2>Мероприятия</h2>${renderEventsList(false, false)}</div>
-                        <div class="card"><h2>Предложить мероприятие</h2>
-                            <p>Если вы хотите провести мероприятие, которого нет в афише, отправьте заявку!</p>
-                            <button class="btn btn-warning" onclick="showRequestModal()">Предложить идею</button>
-                        </div>
-                    </div>
-                    <div id="my-requestsTab" class="${currentTab !== 'my-requests' ? 'hidden' : ''}">
-                        <div class="card"><h2>Мои заявки</h2>${renderMyRequests()}</div>
-                    </div>
-                    <div id="accountTab" class="${currentTab !== 'account' ? 'hidden' : ''}">${renderAccountTab()}</div>
-                `;
+                    <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}"><div class="card"><h2>Мероприятия</h2>${renderEventsList(false, false)}</div><div class="card"><h2>Предложить мероприятие</h2><button class="btn btn-warning btn-sm" onclick="showRequestModal()">Предложить идею</button></div></div>
+                    <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}"><div class="calendar-controls-compact"><button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button><h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3><button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">▶</button></div>${renderCalendarCompact()}</div>
+                    <div id="my-requestsTab" class="${currentTab !== 'my-requests' ? 'hidden' : ''}"><div class="card"><h2>Мои заявки</h2>${renderMyRequests()}</div></div>
+                    <div id="accountTab" class="${currentTab !== 'account' ? 'hidden' : ''}">${renderAccountTab()}</div>`;
             }
         }
 
