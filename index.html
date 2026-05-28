@@ -59,6 +59,77 @@
         .badge-pending { background: #f59e0b; color: #333; padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; }
         .badge-approved { background: #10b981; color: white; padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; }
         .badge-rejected { background: #dc2626; color: white; padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; }
+        /* Календарь */
+        .calendar {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .calendar-header {
+            background: #667eea;
+            color: white;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+        }
+        .calendar-header div {
+            padding: 1rem;
+        }
+        .calendar-week {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+        .calendar-day {
+            min-height: 100px;
+            border: 1px solid #e5e7eb;
+            padding: 0.5rem;
+            vertical-align: top;
+            background: white;
+            transition: 0.2s;
+        }
+        .calendar-day:hover {
+            background: #f9fafb;
+        }
+        .calendar-day-number {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #4b5563;
+        }
+        .calendar-day-events {
+            font-size: 0.7rem;
+        }
+        .calendar-day-events div {
+            background: #e0e7ff;
+            margin: 0.2rem 0;
+            padding: 0.2rem 0.3rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .calendar-day-events div:hover {
+            background: #c7d2fe;
+        }
+        .calendar-empty {
+            background: #f9fafb;
+            color: #9ca3af;
+        }
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .calendar-controls h3 {
+            font-size: 1.5rem;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -115,6 +186,8 @@
         let participantsCount = {};
         let myParticipations = [];
         let currentTab = 'events';
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
 
         function saveSession() {
             if (currentUser) {
@@ -329,6 +402,76 @@
             render();
         }
 
+        function changeMonth(delta) {
+            let newMonth = currentMonth + delta;
+            let newYear = currentYear;
+            if (newMonth < 0) {
+                newMonth = 11;
+                newYear--;
+            } else if (newMonth > 11) {
+                newMonth = 0;
+                newYear++;
+            }
+            currentMonth = newMonth;
+            currentYear = newYear;
+            render();
+        }
+
+        function renderCalendar() {
+            const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+            const startDay = firstDayOfMonth.getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            const eventsByDate = {};
+            events.forEach(event => {
+                if (event.event_date) {
+                    const date = new Date(event.event_date);
+                    const key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+                    if (!eventsByDate[key]) eventsByDate[key] = [];
+                    eventsByDate[key].push(event);
+                }
+            });
+            
+            let calendarHtml = '<div class="calendar"><div class="calendar-header">';
+            const weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+            weekdays.forEach(day => {
+                calendarHtml += `<div>${day}</div>`;
+            });
+            calendarHtml += '</div><div class="calendar-week">';
+            
+            let startOffset = startDay === 0 ? 6 : startDay - 1;
+            for (let i = 0; i < startOffset; i++) {
+                calendarHtml += `<div class="calendar-day calendar-empty"></div>`;
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateKey = `${currentYear}-${currentMonth + 1}-${day}`;
+                const dayEvents = eventsByDate[dateKey] || [];
+                
+                calendarHtml += `<div class="calendar-day">
+                    <div class="calendar-day-number">${day}</div>
+                    <div class="calendar-day-events">`;
+                
+                dayEvents.slice(0, 3).forEach(event => {
+                    calendarHtml += `<div onclick="openEventModal(${event.id})" title="${event.name}">📌 ${event.name.substring(0, 20)}${event.name.length > 20 ? '...' : ''}</div>`;
+                });
+                if (dayEvents.length > 3) {
+                    calendarHtml += `<div style="color:#667eea; font-size:0.6rem;">ещё ${dayEvents.length - 3}...</div>`;
+                }
+                
+                calendarHtml += `</div></div>`;
+            }
+            
+            const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+            const remainingCells = totalCells - (startOffset + daysInMonth);
+            for (let i = 0; i < remainingCells; i++) {
+                calendarHtml += `<div class="calendar-day calendar-empty"></div>`;
+            }
+            
+            calendarHtml += '</div></div>';
+            return calendarHtml;
+        }
+
         async function addEvent() {
             const name = document.getElementById('eventName')?.value.trim();
             const description = document.getElementById('eventDescription')?.value.trim();
@@ -516,6 +659,12 @@
             render();
         }
 
+        function openEventModal(eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (!event) return;
+            alert(`📌 ${event.name}\n📅 ${event.event_date || 'Дата не указана'} ${event.event_time ? ' в ' + event.event_time : ''}\n📝 ${event.description || 'Описание отсутствует'}`);
+        }
+
         function renderAccountTab() {
             return `
                 <div class="card"><h2>Мой аккаунт</h2>
@@ -621,6 +770,12 @@
             const app = document.getElementById('app');
             if (!isLoggedIn || !currentUser) {
                 app.innerHTML = `<div class="motivation"><h1>Добро пожаловать</h1><p>Войдите, чтобы записываться на мероприятия</p></div>
+                <div class="calendar-controls">
+                    <button class="btn btn-secondary" onclick="changeMonth(-1)">◀ Предыдущий</button>
+                    <h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3>
+                    <button class="btn btn-secondary" onclick="changeMonth(1)">Следующий ▶</button>
+                </div>
+                ${renderCalendar()}
                 <div class="card"><h2>Мероприятия</h2>${renderEventsList(false, false)}</div>`;
             } else if (currentUser.is_admin) {
                 app.innerHTML = `
@@ -657,6 +812,12 @@
                             <div class="form-group"><label>Ссылка на фото</label><input type="text" id="eventImage" placeholder="https://..."></div>
                             <button class="btn btn-success" onclick="addEvent()">Добавить мероприятие</button>
                         </div>
+                        <div class="calendar-controls">
+                            <button class="btn btn-secondary" onclick="changeMonth(-1)">◀ Предыдущий</button>
+                            <h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3>
+                            <button class="btn btn-secondary" onclick="changeMonth(1)">Следующий ▶</button>
+                        </div>
+                        ${renderCalendar()}
                         <div class="card"><h2>Все мероприятия (${events.length})</h2>${renderEventsList(true, true)}</div>
                     </div>
                     <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}">
@@ -680,6 +841,12 @@
                             <div class="form-group"><label>Ссылка на фото</label><input type="text" id="eventImage" placeholder="https://..."></div>
                             <button class="btn btn-success" onclick="addEvent()">Добавить мероприятие</button>
                         </div>
+                        <div class="calendar-controls">
+                            <button class="btn btn-secondary" onclick="changeMonth(-1)">◀ Предыдущий</button>
+                            <h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3>
+                            <button class="btn btn-secondary" onclick="changeMonth(1)">Следующий ▶</button>
+                        </div>
+                        ${renderCalendar()}
                         <div class="card"><h2>Все мероприятия</h2>${renderEventsList(false, true)}</div>
                     </div>
                     <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}">
@@ -695,6 +862,12 @@
                         <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
                     </div>
                     <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
+                        <div class="calendar-controls">
+                            <button class="btn btn-secondary" onclick="changeMonth(-1)">◀ Предыдущий</button>
+                            <h3>${new Date(currentYear, currentMonth).toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</h3>
+                            <button class="btn btn-secondary" onclick="changeMonth(1)">Следующий ▶</button>
+                        </div>
+                        ${renderCalendar()}
                         <div class="card"><h2>Мероприятия</h2>${renderEventsList(false, false)}</div>
                         <div class="card"><h2>Предложить мероприятие</h2>
                             <p>Если вы хотите провести мероприятие, которого нет в афише, отправьте заявку!</p>
