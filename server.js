@@ -6,16 +6,12 @@ const path = require('path');
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-// ========== ПОДКЛЮЧЕНИЕ К SUPABASE ==========
-// ЗАМЕНИТЕ НА ВАШУ СТРОКУ ПОДКЛЮЧЕНИЯ
-const SUPABASE_CONNECTION_STRING = 'postgresql://postgres.rvzyrhzacvbyitkckwhn:NqFNd6E3m3vWMM52@aws-0-eu-central-1.pooler.supabase.com:6543/postgres';
+const SUPABASE_CONNECTION_STRING = 'postgresql://postgres:wffeLdfUyHuIlZtU@db.czngxvbqwtmszfvtroak.supabase.co:6543/postgres';
 const pool = new Pool({
     connectionString: SUPABASE_CONNECTION_STRING,
     ssl: { rejectUnauthorized: false }
 });
 
-// ========== API ==========
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
