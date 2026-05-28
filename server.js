@@ -67,16 +67,15 @@ app.get('/api/events', (req, res) => {
 });
 
 app.post('/api/events', (req, res) => {
-    const { name, description, image_url, added_by_email, event_date, event_time } = req.body;
+    const { name, description, image_url, event_date, added_by_email } = req.body;
     const newEvent = {
         id: nextEventId++,
         name,
         description,
         image_url: image_url || 'https://picsum.photos/id/100/400/200',
-        avg_rating: 0,
-        added_by_email,
         event_date: event_date || null,
-        event_time: event_time || null
+        avg_rating: 0,
+        added_by_email
     };
     events.push(newEvent);
     persist();
@@ -173,11 +172,6 @@ app.get('/api/participants/:eventId', (req, res) => {
     res.json(participants.filter(p => p.event_id == req.params.eventId));
 });
 
-app.get('/api/my-participations', (req, res) => {
-    const { userEmail } = req.query;
-    res.json(participants.filter(p => p.user_email === userEmail));
-});
-
 app.get('/api/reviews', (req, res) => {
     const { userEmail } = req.query;
     const user = users.find(u => u.email === userEmail);
@@ -236,7 +230,6 @@ app.delete('/api/reviews/:id', (req, res) => {
     res.json({ success: true });
 });
 
-// ========== ЗАЯВКИ ==========
 app.get('/api/event-requests', (req, res) => {
     const { userEmail } = req.query;
     const user = users.find(u => u.email === userEmail);
@@ -288,40 +281,6 @@ app.put('/api/event-requests/:id', (req, res) => {
     res.json({ success: true });
 });
 
-// ========== ПОИСК ПОХОЖИХ МЕРОПРИЯТИЙ ==========
-app.post('/api/find-similar-events', (req, res) => {
-    const { title, description } = req.body;
-    
-    if (!title) return res.json([]);
-    
-    function similarity(str1, str2) {
-        if (!str1 || !str2) return 0;
-        const s1 = str1.toLowerCase();
-        const s2 = str2.toLowerCase();
-        const words1 = s1.split(/\s+/);
-        const words2 = s2.split(/\s+/);
-        let matches = 0;
-        words1.forEach(w => {
-            if (w.length > 2 && words2.some(w2 => w2.includes(w) || w.includes(w2))) {
-                matches++;
-            }
-        });
-        return matches / Math.max(words1.length, 1);
-    }
-    
-    const similarEvents = events.filter(event => {
-        const titleSim = similarity(title, event.name);
-        const descSim = description ? similarity(description, event.description || '') : 0;
-        return titleSim > 0.3 || descSim > 0.3;
-    }).map(event => ({
-        ...event,
-        match_score: Math.max(similarity(title, event.name), similarity(description || '', event.description || ''))
-    })).sort((a, b) => b.match_score - a.match_score).slice(0, 5);
-    
-    res.json(similarEvents);
-});
-
-// ========== АДМИНИСТРИРОВАНИЕ ==========
 app.get('/api/employees', (req, res) => {
     const { adminEmail } = req.query;
     const admin = users.find(u => u.email === adminEmail);

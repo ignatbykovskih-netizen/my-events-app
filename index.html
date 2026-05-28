@@ -34,6 +34,7 @@
         .event-title { font-weight: bold; font-size: 1.1rem; }
         .event-rating { color: #f59e0b; font-size: 0.8rem; margin: 5px 0; }
         .event-description { font-size: 0.85rem; color: #555; margin: 0.5rem 0; line-height: 1.4; }
+        .event-date { font-size: 0.75rem; color: #888; margin-top: 0.25rem; }
         .flex-buttons { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
@@ -58,6 +59,12 @@
         .badge-pending { background: #f59e0b; color: #333; padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; }
         .badge-approved { background: #10b981; color: white; padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; }
         .badge-rejected { background: #dc2626; color: white; padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center; }
+        .calendar-day { padding: 0.5rem; background: #f5f5f5; border-radius: 0.5rem; cursor: pointer; transition: 0.2s; }
+        .calendar-day:hover { background: #e0e7ff; }
+        .calendar-day.has-event { background: #667eea; color: white; }
+        .calendar-day.today { border: 2px solid #f59e0b; }
+        .calendar-header { font-weight: bold; background: #e5e7eb; }
     </style>
 </head>
 <body>
@@ -70,6 +77,7 @@
     </nav>
     <div class="container" id="app"></div>
     <footer><p>2026 Библиотека им. В.М. Шукшина | Управление мероприятиями</p></footer>
+
     <div id="authModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeAuthModal()">&times;</span>
@@ -81,6 +89,7 @@
             <button class="btn" style="width:100%" onclick="registerOrLogin()">Войти / Зарегистрироваться</button>
         </div>
     </div>
+
     <div id="reviewsModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeReviewsModal()">&times;</span>
@@ -89,6 +98,7 @@
             <button class="btn btn-secondary btn-sm" style="margin-top:1rem;" onclick="closeReviewsModal()">Закрыть</button>
         </div>
     </div>
+
     <div id="requestModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeRequestModal()">&times;</span>
@@ -98,6 +108,7 @@
             <button class="btn btn-success" onclick="submitEventRequest()">Отправить заявку</button>
         </div>
     </div>
+
     <script>
         const API_URL = 'https://my-events-app-1.onrender.com/api';
         let currentUser = null;
@@ -109,6 +120,8 @@
         let myRequests = [];
         let participantsCount = {};
         let currentTab = 'events';
+        let currentCalendarDate = new Date();
+
         function saveSession() {
             if (currentUser) {
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -118,6 +131,7 @@
                 localStorage.removeItem('isLoggedIn');
             }
         }
+
         function loadSession() {
             const savedUser = localStorage.getItem('currentUser');
             const savedLogin = localStorage.getItem('isLoggedIn');
@@ -129,6 +143,7 @@
             }
             return false;
         }
+
         async function loadEvents() {
             try {
                 const res = await fetch(`${API_URL}/events`);
@@ -142,6 +157,7 @@
                 document.getElementById('app').innerHTML = '<div class="card"><p style="color:red;">Ошибка: сервер не запущен. Проверьте консоль.</p><p>URL: ' + API_URL + '</p></div>';
             }
         }
+
         async function loadParticipantsCount() {
             if (!currentUser || (currentUser.role !== 'employee' && !currentUser.is_admin)) return;
             try {
@@ -153,6 +169,7 @@
                 });
             } catch (err) { console.error(err); }
         }
+
         async function showEventParticipants(eventId, eventName) {
             try {
                 const res = await fetch(`${API_URL}/participants/${eventId}`);
@@ -170,9 +187,11 @@
                 alert('Ошибка загрузки списка участников');
             }
         }
+
         function getParticipantsCount(eventId) {
             return participantsCount[eventId] || 0;
         }
+
         async function loadEmployees() {
             if (!currentUser?.is_admin) return;
             try {
@@ -181,6 +200,7 @@
                 render();
             } catch (err) { console.error(err); }
         }
+
         async function loadAllUsers() {
             if (!currentUser?.is_admin) return;
             try {
@@ -189,6 +209,7 @@
                 render();
             } catch (err) { console.error(err); }
         }
+
         async function loadEventRequests() {
             if (!currentUser || (currentUser.role !== 'employee' && !currentUser.is_admin)) return;
             try {
@@ -197,6 +218,7 @@
                 render();
             } catch (err) { console.error(err); }
         }
+
         async function loadMyRequests() {
             if (!isLoggedIn) return;
             try {
@@ -205,11 +227,13 @@
                 render();
             } catch (err) { console.error(err); }
         }
+
         async function updateProfile() {
             const name = document.getElementById('editName').value.trim();
             const surname = document.getElementById('editSurname').value.trim();
             const phone = document.getElementById('editPhone').value.trim();
             if (!name || !surname || !phone) { alert('Заполните все поля'); return; }
+            
             const res = await fetch(`${API_URL}/users/${currentUser.email}`, {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, surname, phone })
@@ -222,6 +246,7 @@
                 alert('Данные обновлены');
             } else { alert('Ошибка'); }
         }
+
         async function registerOrLogin() {
             const name = document.getElementById('regName').value.trim();
             const surname = document.getElementById('regSurname').value.trim();
@@ -260,6 +285,7 @@
                 render();
             } catch (err) { alert(err.message); }
         }
+
         function updateUI() {
             const badge = document.getElementById('userRoleBadge');
             const btn = document.getElementById('authBtn');
@@ -274,6 +300,7 @@
                 btn.onclick = showAuthModal;
             }
         }
+
         function logout() {
             isLoggedIn = false;
             currentUser = null;
@@ -286,27 +313,102 @@
             updateUI();
             loadEvents();
         }
+
         function setTab(tab) {
             currentTab = tab;
             render();
         }
+
+        function changeMonth(delta) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+            render();
+        }
+
+        function getEventsForDate(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const day = date.getDate();
+            return events.filter(e => {
+                if (!e.event_date) return false;
+                const eventDate = new Date(e.event_date);
+                return eventDate.getFullYear() === year && eventDate.getMonth() === month && eventDate.getDate() === day;
+            });
+        }
+
+        function renderCalendar() {
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const startDay = firstDay.getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            let calendarHtml = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button>
+                    <h3>${firstDay.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })}</h3>
+                    <button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">▶</button>
+                </div>
+                <div class="calendar-grid">
+                    <div class="calendar-header">Пн</div><div class="calendar-header">Вт</div><div class="calendar-header">Ср</div>
+                    <div class="calendar-header">Чт</div><div class="calendar-header">Пт</div><div class="calendar-header">Сб</div>
+                    <div class="calendar-header">Вс</div>
+            `;
+            
+            const startIndex = startDay === 0 ? 6 : startDay - 1;
+            for (let i = 0; i < startIndex; i++) {
+                calendarHtml += `<div class="calendar-day"></div>`;
+            }
+            
+            for (let d = 1; d <= daysInMonth; d++) {
+                const date = new Date(year, month, d);
+                const hasEvent = getEventsForDate(date).length > 0;
+                const isToday = today.getDate() === d && today.getMonth() === month && today.getFullYear() === year;
+                calendarHtml += `
+                    <div class="calendar-day ${hasEvent ? 'has-event' : ''} ${isToday ? 'today' : ''}" onclick="showEventsForDate(${year}, ${month}, ${d})">
+                        ${d}
+                    </div>
+                `;
+            }
+            calendarHtml += `</div>`;
+            return calendarHtml;
+        }
+
+        function showEventsForDate(year, month, day) {
+            const date = new Date(year, month, day);
+            const eventsOnDate = getEventsForDate(date);
+            if (eventsOnDate.length === 0) {
+                alert(`На ${date.toLocaleDateString('ru-RU')} нет мероприятий`);
+            } else {
+                let message = `Мероприятия на ${date.toLocaleDateString('ru-RU')}:\n\n`;
+                eventsOnDate.forEach(e => {
+                    message += `• ${e.name}\n`;
+                    message += `  ${e.description ? e.description.substring(0, 100) : ''}\n\n`;
+                });
+                alert(message);
+            }
+        }
+
         async function addEvent() {
             const name = document.getElementById('eventName')?.value.trim();
             const description = document.getElementById('eventDescription')?.value.trim();
+            const event_date = document.getElementById('eventDate')?.value;
             let image_url = document.getElementById('eventImage')?.value.trim();
             if (!name || !description) { alert('Заполните название и описание'); return; }
             if (!image_url) image_url = 'https://picsum.photos/id/100/400/200';
             await fetch(`${API_URL}/events`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, description, image_url, added_by_email: currentUser.email })
+                body: JSON.stringify({ name, description, image_url, event_date, added_by_email: currentUser.email })
             });
             document.getElementById('eventName').value = '';
             document.getElementById('eventDescription').value = '';
+            document.getElementById('eventDate').value = '';
             document.getElementById('eventImage').value = '';
             await loadEvents();
             render();
             alert('Мероприятие добавлено');
         }
+
         async function deleteEvent(eventId) {
             if (!confirm('Удалить мероприятие?')) return;
             await fetch(`${API_URL}/events/${eventId}`, {
@@ -316,6 +418,7 @@
             await loadEvents();
             render();
         }
+
         async function createEmployee() {
             const name = document.getElementById('empName')?.value.trim();
             const surname = document.getElementById('empSurname')?.value.trim();
@@ -336,6 +439,7 @@
                 render();
             } else { alert('Ошибка'); }
         }
+
         async function deleteEmployee(email) {
             if (!confirm('Удалить сотрудника?')) return;
             await fetch(`${API_URL}/employees/${email}`, {
@@ -345,6 +449,7 @@
             await loadEmployees();
             render();
         }
+
         async function deleteUser(email) {
             if (!confirm('Удалить пользователя?')) return;
             await fetch(`${API_URL}/users/${email}`, {
@@ -356,6 +461,7 @@
             render();
             alert('Пользователь удалён');
         }
+
         async function participateInEvent(eventId, eventName) {
             if (!isLoggedIn) { alert('Войдите в аккаунт'); return; }
             const res = await fetch(`${API_URL}/participate`, {
@@ -365,6 +471,7 @@
             if (res.ok) alert('Вы записаны на мероприятие');
             else alert('Ошибка или вы уже записаны');
         }
+
         async function cancelParticipation(eventId, eventName) {
             if (!confirm(`Отменить запись на "${eventName}"?`)) return;
             const res = await fetch(`${API_URL}/participate/${eventId}`, {
@@ -376,6 +483,7 @@
                 await loadEvents();
             } else { alert('Ошибка'); }
         }
+
         async function submitEventRequest() {
             const title = document.getElementById('requestTitle').value.trim();
             const description = document.getElementById('requestDescription').value.trim();
@@ -398,6 +506,7 @@
                 render();
             } else { alert('Ошибка'); }
         }
+
         async function updateRequestStatus(requestId, status) {
             const comment = status === 'rejected' ? prompt('Причина отклонения:') : '';
             await fetch(`${API_URL}/event-requests/${requestId}`, {
@@ -408,6 +517,7 @@
             await loadMyRequests();
             render();
         }
+
         async function showReviews(eventId, eventName) {
             const res = await fetch(`${API_URL}/reviews/${eventId}`);
             const reviews = await res.json();
@@ -426,11 +536,13 @@
             }
             document.getElementById('reviewsModal').classList.add('active');
         }
+
         function closeReviewsModal() { document.getElementById('reviewsModal').classList.remove('active'); }
         function showRequestModal() { document.getElementById('requestModal').classList.add('active'); }
         function closeRequestModal() { document.getElementById('requestModal').classList.remove('active'); }
         function showAuthModal() { document.getElementById('authModal').classList.add('active'); }
         function closeAuthModal() { document.getElementById('authModal').classList.remove('active'); }
+
         async function addReview(eventId, eventName) {
             if (!isLoggedIn) { alert('Войдите в аккаунт'); return; }
             const rating = prompt('Оценка от 1 до 5:', '5');
@@ -446,6 +558,7 @@
             await loadEvents();
             render();
         }
+
         function renderAccountTab() {
             return `
                 <div class="card"><h2>Мой аккаунт</h2>
@@ -466,6 +579,7 @@
                 </div>
             `;
         }
+
         function renderEventsList(showDelete = false, showStats = false) {
             if (events.length === 0) return '<p>Мероприятия пока не добавлены</p>';
             return `
@@ -475,6 +589,7 @@
                             <img src="${e.image_url}" onerror="this.src='https://picsum.photos/id/100/400/200'">
                             <div class="event-info">
                                 <div class="event-title">${e.name}</div>
+                                ${e.event_date ? `<div class="event-date">📅 ${new Date(e.event_date).toLocaleDateString('ru-RU')}</div>` : ''}
                                 ${e.avg_rating ? `<div class="event-rating">${'★'.repeat(Math.round(e.avg_rating))} ${e.avg_rating.toFixed(1)}/5</div>` : '<div class="event-rating">Нет оценок</div>'}
                                 <div class="event-description">${e.description}</div>
                                 <div class="flex-buttons">
@@ -491,6 +606,7 @@
                 </div>
             `;
         }
+
         function renderMyRequests() {
             if (myRequests.length === 0) return '<p>Вы ещё не отправляли заявок</p>';
             return `
@@ -511,6 +627,7 @@
                 </div>
             `;
         }
+
         function renderAdminRequests() {
             if (eventRequests.length === 0) return '<p>Нет заявок</p>';
             return `
@@ -538,17 +655,30 @@
                 </div>
             `;
         }
+
         function render() {
             const app = document.getElementById('app');
             if (!isLoggedIn || !currentUser) {
-                app.innerHTML = `<div class="motivation"><h1>Добро пожаловать</h1><p>Войдите, чтобы записываться на мероприятия</p></div>
-                <div class="card"><h2>Мероприятия</h2>${renderEventsList(false, false)}</div>`;
+                app.innerHTML = `
+                    <div class="tabs">
+                        <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
+                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">📅 Календарь</button>
+                    </div>
+                    <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
+                        <div class="motivation"><h1>Добро пожаловать</h1><p>Войдите, чтобы записываться на мероприятия</p></div>
+                        <div class="card"><h2>Мероприятия</h2>${renderEventsList(false, false)}</div>
+                    </div>
+                    <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}">
+                        <div class="card"><h2>📅 Календарь мероприятий</h2>${renderCalendar()}</div>
+                    </div>
+                `;
             } else if (currentUser.is_admin) {
                 app.innerHTML = `
                     <div class="tabs">
                         <button class="tab ${currentTab === 'employees' ? 'active' : ''}" onclick="setTab('employees')">Сотрудники</button>
                         <button class="tab ${currentTab === 'users' ? 'active' : ''}" onclick="setTab('users')">Читатели</button>
                         <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
+                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">📅 Календарь</button>
                         <button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки (${eventRequests.filter(r => r.status === 'pending').length})</button>
                         <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
                     </div>
@@ -570,13 +700,17 @@
                         </div>
                     </div>
                     <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
-                        <div class="card"><h2>Добавить мероприятие</h2>
+                        <div class="card"><h2>➕ Добавить мероприятие</h2>
                             <div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div>
                             <div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div>
+                            <div class="form-group"><label>Дата проведения</label><input type="date" id="eventDate"></div>
                             <div class="form-group"><label>Ссылка на фото</label><input type="text" id="eventImage" placeholder="https://..."></div>
                             <button class="btn btn-success" onclick="addEvent()">Добавить мероприятие</button>
                         </div>
                         <div class="card"><h2>Все мероприятия (${events.length})</h2>${renderEventsList(true, true)}</div>
+                    </div>
+                    <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}">
+                        <div class="card"><h2>📅 Календарь мероприятий</h2>${renderCalendar()}</div>
                     </div>
                     <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}">
                         <div class="card"><h2>Заявки от читателей</h2>${renderAdminRequests()}</div>
@@ -587,17 +721,22 @@
                 app.innerHTML = `
                     <div class="tabs">
                         <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
+                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">📅 Календарь</button>
                         <button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки (${eventRequests.filter(r => r.status === 'pending').length})</button>
                         <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
                     </div>
                     <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
-                        <div class="card"><h2>Добавить мероприятие</h2>
+                        <div class="card"><h2>➕ Добавить мероприятие</h2>
                             <div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div>
                             <div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div>
+                            <div class="form-group"><label>Дата проведения</label><input type="date" id="eventDate"></div>
                             <div class="form-group"><label>Ссылка на фото</label><input type="text" id="eventImage" placeholder="https://..."></div>
                             <button class="btn btn-success" onclick="addEvent()">Добавить мероприятие</button>
                         </div>
                         <div class="card"><h2>Все мероприятия</h2>${renderEventsList(false, true)}</div>
+                    </div>
+                    <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}">
+                        <div class="card"><h2>📅 Календарь мероприятий</h2>${renderCalendar()}</div>
                     </div>
                     <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}">
                         <div class="card"><h2>Заявки от читателей</h2>${renderAdminRequests()}</div>
@@ -608,6 +747,7 @@
                 app.innerHTML = `
                     <div class="tabs">
                         <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
+                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">📅 Календарь</button>
                         <button class="tab ${currentTab === 'my-requests' ? 'active' : ''}" onclick="setTab('my-requests')">Мои заявки</button>
                         <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
                     </div>
@@ -618,6 +758,9 @@
                             <button class="btn btn-warning" onclick="showRequestModal()">Предложить идею</button>
                         </div>
                     </div>
+                    <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}">
+                        <div class="card"><h2>📅 Календарь мероприятий</h2>${renderCalendar()}</div>
+                    </div>
                     <div id="my-requestsTab" class="${currentTab !== 'my-requests' ? 'hidden' : ''}">
                         <div class="card"><h2>Мои заявки</h2>${renderMyRequests()}</div>
                     </div>
@@ -625,6 +768,7 @@
                 `;
             }
         }
+
         if (!loadSession()) {
             loadEvents();
             updateUI();
