@@ -65,7 +65,6 @@
         .calendar-day.has-event { background: #667eea; color: white; }
         .calendar-day.today { border: 2px solid #f59e0b; }
         .calendar-header { font-weight: bold; background: #e5e7eb; }
-        /* Стили для отчёта */
         .stats-card { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 1.5rem; border-radius: 1rem; text-align: center; }
         .stats-number { font-size: 2.5rem; font-weight: bold; }
         .stats-label { font-size: 0.9rem; opacity: 0.9; }
@@ -126,6 +125,7 @@
         let eventRequests = [];
         let myRequests = [];
         let participantsCount = {};
+        let userParticipations = {};
         let currentTab = 'events';
         let currentCalendarDate = new Date();
         let statsData = { eventsCount: 0, participantsCount: 0, reviewsCount: 0, events: [], participants: [], reviews: [] };
@@ -161,6 +161,7 @@
                 if (currentUser && (currentUser.role === 'employee' || currentUser.is_admin)) {
                     await loadParticipantsCount();
                 }
+                await loadUserParticipations();
                 render();
             } catch (err) {
                 console.error(err);
@@ -176,6 +177,20 @@
                 participantsCount = {};
                 allParts.forEach(p => {
                     participantsCount[p.event_id] = (participantsCount[p.event_id] || 0) + 1;
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadUserParticipations() {
+            if (!isLoggedIn || !currentUser) return;
+            userParticipations = {};
+            try {
+                const res = await fetch(`${API_URL}/participants?employeeEmail=${currentUser.email}`);
+                const allParts = await res.json();
+                allParts.forEach(p => {
+                    if (p.user_email === currentUser.email) {
+                        userParticipations[p.event_id] = true;
+                    }
                 });
             } catch (err) { console.error(err); }
         }
@@ -344,6 +359,7 @@
             eventRequests = [];
             myRequests = [];
             participantsCount = {};
+            userParticipations = {};
             saveSession();
             updateUI();
             loadEvents();
@@ -351,6 +367,11 @@
 
         function setTab(tab) {
             currentTab = tab;
+            render();
+        }
+
+        function changeCalendarMonth(delta) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
             render();
         }
 
@@ -402,11 +423,6 @@
             }
             calendarHtml += `</div>`;
             return calendarHtml;
-        }
-
-        function changeCalendarMonth(delta) {
-            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
-            render();
         }
 
         function showEventsForDate(year, month, day) {
@@ -507,9 +523,11 @@
             });
             if (res.ok) {
                 alert('Вы записаны на мероприятие');
+                await loadEvents();
                 if (currentUser.role === 'employee' || currentUser.is_admin) await loadStats();
+            } else {
+                alert('Ошибка или вы уже записаны');
             }
-            else alert('Ошибка или вы уже записаны');
         }
 
         async function cancelParticipation(eventId, eventName) {
@@ -638,9 +656,11 @@
                                 <div class="flex-buttons">
                                     <button class="btn btn-secondary" onclick="showReviews(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отзывы</button>
                                     ${showStats ? `<button class="btn btn-outline" onclick="showEventParticipants(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Участники (${getParticipantsCount(e.id)})</button>` : ''}
-                                    ${!showStats && !showDelete && isLoggedIn && currentUser && currentUser.role === 'user' ? `<button class="btn" onclick="participateInEvent(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Записаться</button>
-                                    <button class="btn btn-outline" onclick="addReview(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Оценить</button>
-                                    <button class="btn btn-danger" onclick="cancelParticipation(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отменить запись</button>` : ''}
+                                    ${!showStats && !showDelete && isLoggedIn && currentUser && currentUser.role === 'user' ? 
+                                        (userParticipations[e.id] ? 
+                                            `<button class="btn btn-danger" onclick="cancelParticipation(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Отменить запись</button>` : 
+                                            `<button class="btn btn-success" onclick="participateInEvent(${e.id}, '${e.name.replace(/'/g, "\\'")}')">Записаться</button>`
+                                        ) : ''}
                                     ${showDelete ? `<button class="btn btn-danger" onclick="deleteEvent(${e.id})">Удалить</button>` : ''}
                                 </div>
                             </div>
@@ -703,7 +723,7 @@
             const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
             return `
                 <div class="card">
-                    <h2>📊 Отчёт за период</h2>
+                    <h2>Отчёт за период</h2>
                     <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 2rem;">
                         <button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button>
                         <h3>${monthNames[selectedMonth]} ${selectedYear}</h3>
@@ -725,7 +745,7 @@
                     </div>
                 </div>
                 <div class="card">
-                    <h2>📋 Мероприятия за месяц</h2>
+                    <h2>Мероприятия за месяц</h2>
                     ${statsData.events.length === 0 ? '<p>Нет мероприятий</p>' : `
                         <div class="report-list">
                             ${statsData.events.map(e => `<div class="report-item">📅 ${e.event_date ? new Date(e.event_date).toLocaleDateString('ru-RU') : 'Дата не указана'} — <strong>${e.name}</strong><br><small>${e.description ? e.description.substring(0, 100) : ''}</small></div>`).join('')}
@@ -733,7 +753,7 @@
                     `}
                 </div>
                 <div class="card">
-                    <h2>👥 Участники за месяц</h2>
+                    <h2>Участники за месяц</h2>
                     ${statsData.participants.length === 0 ? '<p>Нет записей</p>' : `
                         <div class="report-list">
                             ${statsData.participants.map(p => `<div class="report-item">👤 ${p.user_name} записался на "<strong>${p.event_name}</strong>" — ${new Date(p.registered_at).toLocaleDateString('ru-RU')}</div>`).join('')}
@@ -741,7 +761,7 @@
                     `}
                 </div>
                 <div class="card">
-                    <h2>💬 Отзывы за месяц</h2>
+                    <h2>Отзывы за месяц</h2>
                     ${statsData.reviews.length === 0 ? '<p>Нет отзывов</p>' : `
                         <div class="report-list">
                             ${statsData.reviews.map(r => `<div class="report-item">⭐ ${'★'.repeat(r.rating)} — <strong>${r.event_name}</strong><br><small>${r.comment ? r.comment : 'Без комментария'}</small><br><small>${r.user_name}, ${new Date(r.created_at).toLocaleDateString('ru-RU')}</small></div>`).join('')}
@@ -757,14 +777,14 @@
                 app.innerHTML = `
                     <div class="tabs">
                         <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
-                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">📅 Календарь</button>
+                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button>
                     </div>
                     <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
                         <div class="motivation"><h1>Добро пожаловать</h1><p>Войдите, чтобы записываться на мероприятия</p></div>
                         <div class="card"><h2>Мероприятия</h2>${renderEventsList(false, false)}</div>
                     </div>
                     <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}">
-                        <div class="card"><h2>📅 Календарь мероприятий</h2>${renderCalendar()}</div>
+                        <div class="card"><h2>Календарь мероприятий</h2>${renderCalendar()}</div>
                     </div>
                 `;
             } else if (currentUser.is_admin) {
@@ -773,9 +793,9 @@
                         <button class="tab ${currentTab === 'employees' ? 'active' : ''}" onclick="setTab('employees')">Сотрудники</button>
                         <button class="tab ${currentTab === 'users' ? 'active' : ''}" onclick="setTab('users')">Читатели</button>
                         <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
-                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">📅 Календарь</button>
+                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button>
                         <button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки (${eventRequests.filter(r => r.status === 'pending').length})</button>
-                        <button class="tab ${currentTab === 'reports' ? 'active' : ''}" onclick="setTab('reports')">📊 Отчёт</button>
+                        <button class="tab ${currentTab === 'reports' ? 'active' : ''}" onclick="setTab('reports')">Отчёт</button>
                         <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
                     </div>
                     <div id="employeesTab" class="${currentTab !== 'employees' ? 'hidden' : ''}">
@@ -796,7 +816,7 @@
                         </div>
                     </div>
                     <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
-                        <div class="card"><h2>➕ Добавить мероприятие</h2>
+                        <div class="card"><h2>Добавить мероприятие</h2>
                             <div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div>
                             <div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div>
                             <div class="form-group"><label>Дата проведения</label><input type="date" id="eventDate"></div>
@@ -806,7 +826,7 @@
                         <div class="card"><h2>Все мероприятия (${events.length})</h2>${renderEventsList(true, true)}</div>
                     </div>
                     <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}">
-                        <div class="card"><h2>📅 Календарь мероприятий</h2>${renderCalendar()}</div>
+                        <div class="card"><h2>Календарь мероприятий</h2>${renderCalendar()}</div>
                     </div>
                     <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}">
                         <div class="card"><h2>Заявки от читателей</h2>${renderAdminRequests()}</div>
@@ -820,13 +840,13 @@
                 app.innerHTML = `
                     <div class="tabs">
                         <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
-                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">📅 Календарь</button>
+                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button>
                         <button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки (${eventRequests.filter(r => r.status === 'pending').length})</button>
-                        <button class="tab ${currentTab === 'reports' ? 'active' : ''}" onclick="setTab('reports')">📊 Отчёт</button>
+                        <button class="tab ${currentTab === 'reports' ? 'active' : ''}" onclick="setTab('reports')">Отчёт</button>
                         <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
                     </div>
                     <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
-                        <div class="card"><h2>➕ Добавить мероприятие</h2>
+                        <div class="card"><h2>Добавить мероприятие</h2>
                             <div class="form-group"><label>Название</label><input type="text" id="eventName" placeholder="Название"></div>
                             <div class="form-group"><label>Описание</label><textarea id="eventDescription" placeholder="Описание"></textarea></div>
                             <div class="form-group"><label>Дата проведения</label><input type="date" id="eventDate"></div>
@@ -836,7 +856,7 @@
                         <div class="card"><h2>Все мероприятия</h2>${renderEventsList(false, true)}</div>
                     </div>
                     <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}">
-                        <div class="card"><h2>📅 Календарь мероприятий</h2>${renderCalendar()}</div>
+                        <div class="card"><h2>Календарь мероприятий</h2>${renderCalendar()}</div>
                     </div>
                     <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}">
                         <div class="card"><h2>Заявки от читателей</h2>${renderAdminRequests()}</div>
@@ -850,7 +870,7 @@
                 app.innerHTML = `
                     <div class="tabs">
                         <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
-                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">📅 Календарь</button>
+                        <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">Календарь</button>
                         <button class="tab ${currentTab === 'my-requests' ? 'active' : ''}" onclick="setTab('my-requests')">Мои заявки</button>
                         <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
                     </div>
@@ -862,7 +882,7 @@
                         </div>
                     </div>
                     <div id="calendarTab" class="${currentTab !== 'calendar' ? 'hidden' : ''}">
-                        <div class="card"><h2>📅 Календарь мероприятий</h2>${renderCalendar()}</div>
+                        <div class="card"><h2>Календарь мероприятий</h2>${renderCalendar()}</div>
                     </div>
                     <div id="my-requestsTab" class="${currentTab !== 'my-requests' ? 'hidden' : ''}">
                         <div class="card"><h2>Мои заявки</h2>${renderMyRequests()}</div>
