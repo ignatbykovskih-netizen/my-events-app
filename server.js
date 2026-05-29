@@ -331,6 +331,48 @@ app.delete('/api/users/:email', (req, res) => {
     res.json({ success: true });
 });
 
+// ========== API ДЛЯ СТАТИСТИКИ (ОТЧЁТ) ==========
+app.get('/api/stats/:month/:year', (req, res) => {
+    const { month, year } = req.params;
+    const { userEmail } = req.query;
+    
+    const user = users.find(u => u.email === userEmail);
+    if (!user || (user.role !== 'employee' && !user.is_admin)) {
+        return res.status(403).json({ error: 'Доступ только для сотрудников' });
+    }
+    
+    const monthNum = parseInt(month);
+    const yearNum = parseInt(year);
+    
+    // Фильтруем мероприятия по дате
+    const monthEvents = events.filter(e => {
+        if (!e.event_date) return false;
+        const eventDate = new Date(e.event_date);
+        return eventDate.getMonth() === monthNum && eventDate.getFullYear() === yearNum;
+    });
+    
+    // Фильтруем участников по дате регистрации
+    const monthParticipants = participants.filter(p => {
+        const regDate = new Date(p.registered_at);
+        return regDate.getMonth() === monthNum && regDate.getFullYear() === yearNum;
+    });
+    
+    // Фильтруем отзывы по дате создания
+    const monthReviews = reviews.filter(r => {
+        const reviewDate = new Date(r.created_at);
+        return reviewDate.getMonth() === monthNum && reviewDate.getFullYear() === yearNum;
+    });
+    
+    res.json({
+        eventsCount: monthEvents.length,
+        participantsCount: monthParticipants.length,
+        reviewsCount: monthReviews.length,
+        events: monthEvents,
+        participants: monthParticipants,
+        reviews: monthReviews
+    });
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Сервер запущен на порту ${PORT}`);

@@ -65,6 +65,13 @@
         .calendar-day.has-event { background: #667eea; color: white; }
         .calendar-day.today { border: 2px solid #f59e0b; }
         .calendar-header { font-weight: bold; background: #e5e7eb; }
+        /* Стили для отчёта */
+        .stats-card { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 1.5rem; border-radius: 1rem; text-align: center; }
+        .stats-number { font-size: 2.5rem; font-weight: bold; }
+        .stats-label { font-size: 0.9rem; opacity: 0.9; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .report-list { max-height: 300px; overflow-y: auto; }
+        .report-item { padding: 0.5rem; border-bottom: 1px solid #ddd; }
     </style>
 </head>
 <body>
@@ -121,6 +128,9 @@
         let participantsCount = {};
         let currentTab = 'events';
         let currentCalendarDate = new Date();
+        let statsData = { eventsCount: 0, participantsCount: 0, reviewsCount: 0, events: [], participants: [], reviews: [] };
+        let selectedMonth = new Date().getMonth();
+        let selectedYear = new Date().getFullYear();
 
         function saveSession() {
             if (currentUser) {
@@ -168,6 +178,30 @@
                     participantsCount[p.event_id] = (participantsCount[p.event_id] || 0) + 1;
                 });
             } catch (err) { console.error(err); }
+        }
+
+        async function loadStats() {
+            if (!currentUser || (currentUser.role !== 'employee' && !currentUser.is_admin)) return;
+            try {
+                const res = await fetch(`${API_URL}/stats/${selectedMonth}/${selectedYear}?userEmail=${currentUser.email}`);
+                statsData = await res.json();
+                render();
+            } catch (err) { console.error(err); }
+        }
+
+        function changeMonth(delta) {
+            let newMonth = selectedMonth + delta;
+            let newYear = selectedYear;
+            if (newMonth < 0) {
+                newMonth = 11;
+                newYear--;
+            } else if (newMonth > 11) {
+                newMonth = 0;
+                newYear++;
+            }
+            selectedMonth = newMonth;
+            selectedYear = newYear;
+            loadStats();
         }
 
         async function showEventParticipants(eventId, eventName) {
@@ -278,6 +312,7 @@
                 }
                 if (currentUser.role === 'employee' || currentUser.is_admin) {
                     await loadEventRequests();
+                    await loadStats();
                 }
                 await loadMyRequests();
                 await loadEvents();
@@ -319,11 +354,6 @@
             render();
         }
 
-        function changeMonth(delta) {
-            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
-            render();
-        }
-
         function getEventsForDate(date) {
             const year = date.getFullYear();
             const month = date.getMonth();
@@ -345,9 +375,9 @@
             
             let calendarHtml = `
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button>
+                    <button class="btn btn-secondary btn-sm" onclick="changeCalendarMonth(-1)">◀</button>
                     <h3>${firstDay.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })}</h3>
-                    <button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">▶</button>
+                    <button class="btn btn-secondary btn-sm" onclick="changeCalendarMonth(1)">▶</button>
                 </div>
                 <div class="calendar-grid">
                     <div class="calendar-header">Пн</div><div class="calendar-header">Вт</div><div class="calendar-header">Ср</div>
@@ -372,6 +402,11 @@
             }
             calendarHtml += `</div>`;
             return calendarHtml;
+        }
+
+        function changeCalendarMonth(delta) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+            render();
         }
 
         function showEventsForDate(year, month, day) {
@@ -405,6 +440,7 @@
             document.getElementById('eventDate').value = '';
             document.getElementById('eventImage').value = '';
             await loadEvents();
+            if (currentUser.role === 'employee' || currentUser.is_admin) await loadStats();
             render();
             alert('Мероприятие добавлено');
         }
@@ -416,6 +452,7 @@
                 body: JSON.stringify({ email: currentUser.email, isAdmin: currentUser.is_admin })
             });
             await loadEvents();
+            if (currentUser.role === 'employee' || currentUser.is_admin) await loadStats();
             render();
         }
 
@@ -468,7 +505,10 @@
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ user_email: currentUser.email, user_name: currentUser.name, event_id: eventId, event_name: eventName })
             });
-            if (res.ok) alert('Вы записаны на мероприятие');
+            if (res.ok) {
+                alert('Вы записаны на мероприятие');
+                if (currentUser.role === 'employee' || currentUser.is_admin) await loadStats();
+            }
             else alert('Ошибка или вы уже записаны');
         }
 
@@ -481,6 +521,7 @@
             if (res.ok) {
                 alert('Вы отменили запись');
                 await loadEvents();
+                if (currentUser.role === 'employee' || currentUser.is_admin) await loadStats();
             } else { alert('Ошибка'); }
         }
 
@@ -503,6 +544,7 @@
                 document.getElementById('requestDescription').value = '';
                 closeRequestModal();
                 await loadMyRequests();
+                if (currentUser.role === 'employee' || currentUser.is_admin) await loadEventRequests();
                 render();
             } else { alert('Ошибка'); }
         }
@@ -556,6 +598,7 @@
             });
             alert('Спасибо за отзыв');
             await loadEvents();
+            if (currentUser.role === 'employee' || currentUser.is_admin) await loadStats();
             render();
         }
 
@@ -656,6 +699,58 @@
             `;
         }
 
+        function renderStatsTab() {
+            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            return `
+                <div class="card">
+                    <h2>📊 Отчёт за период</h2>
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                        <button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button>
+                        <h3>${monthNames[selectedMonth]} ${selectedYear}</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">▶</button>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stats-card">
+                            <div class="stats-number">${statsData.eventsCount}</div>
+                            <div class="stats-label">Проведено мероприятий</div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-number">${statsData.participantsCount}</div>
+                            <div class="stats-label">Всего участников</div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-number">${statsData.reviewsCount}</div>
+                            <div class="stats-label">Оставлено отзывов</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>📋 Мероприятия за месяц</h2>
+                    ${statsData.events.length === 0 ? '<p>Нет мероприятий</p>' : `
+                        <div class="report-list">
+                            ${statsData.events.map(e => `<div class="report-item">📅 ${e.event_date ? new Date(e.event_date).toLocaleDateString('ru-RU') : 'Дата не указана'} — <strong>${e.name}</strong><br><small>${e.description ? e.description.substring(0, 100) : ''}</small></div>`).join('')}
+                        </div>
+                    `}
+                </div>
+                <div class="card">
+                    <h2>👥 Участники за месяц</h2>
+                    ${statsData.participants.length === 0 ? '<p>Нет записей</p>' : `
+                        <div class="report-list">
+                            ${statsData.participants.map(p => `<div class="report-item">👤 ${p.user_name} записался на "<strong>${p.event_name}</strong>" — ${new Date(p.registered_at).toLocaleDateString('ru-RU')}</div>`).join('')}
+                        </div>
+                    `}
+                </div>
+                <div class="card">
+                    <h2>💬 Отзывы за месяц</h2>
+                    ${statsData.reviews.length === 0 ? '<p>Нет отзывов</p>' : `
+                        <div class="report-list">
+                            ${statsData.reviews.map(r => `<div class="report-item">⭐ ${'★'.repeat(r.rating)} — <strong>${r.event_name}</strong><br><small>${r.comment ? r.comment : 'Без комментария'}</small><br><small>${r.user_name}, ${new Date(r.created_at).toLocaleDateString('ru-RU')}</small></div>`).join('')}
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
         function render() {
             const app = document.getElementById('app');
             if (!isLoggedIn || !currentUser) {
@@ -680,6 +775,7 @@
                         <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
                         <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">📅 Календарь</button>
                         <button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки (${eventRequests.filter(r => r.status === 'pending').length})</button>
+                        <button class="tab ${currentTab === 'reports' ? 'active' : ''}" onclick="setTab('reports')">📊 Отчёт</button>
                         <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
                     </div>
                     <div id="employeesTab" class="${currentTab !== 'employees' ? 'hidden' : ''}">
@@ -715,6 +811,9 @@
                     <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}">
                         <div class="card"><h2>Заявки от читателей</h2>${renderAdminRequests()}</div>
                     </div>
+                    <div id="reportsTab" class="${currentTab !== 'reports' ? 'hidden' : ''}">
+                        ${renderStatsTab()}
+                    </div>
                     <div id="accountTab" class="${currentTab !== 'account' ? 'hidden' : ''}">${renderAccountTab()}</div>
                 `;
             } else if (currentUser.role === 'employee') {
@@ -723,6 +822,7 @@
                         <button class="tab ${currentTab === 'events' ? 'active' : ''}" onclick="setTab('events')">Мероприятия</button>
                         <button class="tab ${currentTab === 'calendar' ? 'active' : ''}" onclick="setTab('calendar')">📅 Календарь</button>
                         <button class="tab ${currentTab === 'requests' ? 'active' : ''}" onclick="setTab('requests')">Заявки (${eventRequests.filter(r => r.status === 'pending').length})</button>
+                        <button class="tab ${currentTab === 'reports' ? 'active' : ''}" onclick="setTab('reports')">📊 Отчёт</button>
                         <button class="tab ${currentTab === 'account' ? 'active' : ''}" onclick="setTab('account')">Аккаунт</button>
                     </div>
                     <div id="eventsTab" class="${currentTab !== 'events' ? 'hidden' : ''}">
@@ -740,6 +840,9 @@
                     </div>
                     <div id="requestsTab" class="${currentTab !== 'requests' ? 'hidden' : ''}">
                         <div class="card"><h2>Заявки от читателей</h2>${renderAdminRequests()}</div>
+                    </div>
+                    <div id="reportsTab" class="${currentTab !== 'reports' ? 'hidden' : ''}">
+                        ${renderStatsTab()}
                     </div>
                     <div id="accountTab" class="${currentTab !== 'account' ? 'hidden' : ''}">${renderAccountTab()}</div>
                 `;
@@ -780,6 +883,7 @@
             }
             if (currentUser.role === 'employee' || currentUser.is_admin) {
                 loadEventRequests();
+                loadStats();
             }
             loadMyRequests();
         }
